@@ -19,7 +19,10 @@
     "test:lint": "eslint src --ext .ts",
     "test:prettier": "prettier \"src/**/*.ts\" --list-different",
     "test:spelling": "cspell \"{README.md,.github/*.md,src/**/*.ts}\"",
-    "test:unit": "nyc --silent ava",
+    "test:unit": "nyc instrument --compact=false build instrumented",
+    "cypress:open": "cypress open",
+    "cypress:verify": "cypress verify",
+    "cypress:run": "cypress run",
     "check-cli": "run-s test diff-integration-tests check-integration-tests",
     "check-integration-tests": "run-s check-integration-test:*",
     "diff-integration-tests": "mkdir -p diff && rm -rf diff/test && cp -r test diff/test && rm -rf diff/test/test-*/.git && cd diff && git init --quiet && git add -A && git commit --quiet --no-verify --allow-empty -m 'WIP' && echo '\\n\\nCommitted most recent integration test output in the \"diff\" directory. Review the changes with \"cd diff && git diff HEAD\" or your preferred git diff viewer.'",
@@ -41,15 +44,21 @@
   "engines": {
     "node": ">=10"
   },
-  "dependencies": {},
+  "peerDependencies": {
+    "rxjs": "^6.6.3"
+  },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
+    "@cypress/code-coverage": "^3.9.2",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@typescript-eslint/eslint-plugin": "^4.14.2",
     "@typescript-eslint/parser": "^4.14.2",
     "ava": "^3.15.0",
+    "babel-plugin-istanbul": "^6.0.0",
+    "browserify-istanbul": "^3.0.1",
     "codecov": "^3.8.1",
     "cspell": "^5.2.4",
+    "cypress": "^6.4.0",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^7.19.0",
     "eslint-config-prettier": "^6.15.0",
@@ -63,6 +72,7 @@
     "prettier": "^2.2.1",
     "standard-version": "^9.1.0",
     "ts-node": "^9.1.1",
+    "tsify": "^5.0.2",
     "typedoc": "^0.20.22",
     "typescript": "^4.1.3"
   },
@@ -97,8 +107,6 @@
   },
   "nyc": {
     "extends": "@istanbuljs/nyc-config-typescript",
-    "exclude": [
-      "**/*.spec.js"
-    ]
+    "all": true
   }
 }
