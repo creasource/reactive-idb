@@ -1,3 +1,3 @@
 # reactive-idb
 
-A reactive wrapper to indexedDb using Rxjs
+A reactive wrapper to IndexedDB using Rxjs

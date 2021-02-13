@@ -12,7 +12,7 @@ export class ReactiveIDBObjectStore {
   /**
    * Returns the key path of the store, or null if none.
    */
-  readonly keyPath: string | string[];
+  readonly keyPath: null | string | string[];
   /**
    * Returns the name of the store.
    */

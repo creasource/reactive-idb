@@ -1,137 +1,5 @@
-import { Observable } from 'rxjs';
-
 import { ReactiveIDBObjectStore } from './reactive-idb-object-store';
 import { ReactiveIDBTransaction } from './reactive-idb-transaction';
-
-export interface ReactiveIDBIndexSchema {
-  name: string;
-  keyPath: string | string[];
-  options?: IDBIndexParameters;
-}
-
-export interface ReactiveIDBStoreSchema {
-  name: string;
-  options?: IDBObjectStoreParameters;
-  indexes?: ReactiveIDBIndexSchema[];
-}
-
-export interface ReactiveIDBDatabaseSchema {
-  version: number;
-  stores: ReactiveIDBStoreSchema[];
-}
-
-/**
- * Options to pass to the ReactiveIDBDatabase constructor
- */
-export interface ReactiveIDBDatabaseOptions {
-  /**
-   * Name of this database
-   */
-  name: string;
-
-  /**
-   * @default `[]`
-   */
-  schema?: ReactiveIDBDatabaseSchema[];
-
-  /**
-   * IDBFactory to use to create the database if different from `window.indexeddb`
-   * @default `window.indexeddb`
-   */
-  factory?: IDBFactory;
-
-  /**
-   *
-   * @param database
-   * @param versionChangeEvent
-   */
-  onUpgrade?: (
-    database: IDBDatabase,
-    oldVersion: number,
-    newVersion: number | null,
-    transaction: IDBTransaction
-  ) => void;
-
-  /**
-   *
-   */
-  autoCloseOnVersionChange?: boolean;
-}
-
-export const createReactiveDatabase = (
-  options: ReactiveIDBDatabaseOptions
-): Observable<ReactiveIDBDatabase> => {
-  return new Observable<ReactiveIDBDatabase>((subscriber) => {
-    const opts: Required<ReactiveIDBDatabaseOptions> = {
-      schema: [],
-      factory: window.indexedDB,
-      onUpgrade: () => void 0,
-      autoCloseOnVersionChange: true,
-      ...options,
-    };
-
-    const version = Math.max(...opts.schema.map((schema) => schema.version), 1);
-
-    const request = opts.factory.open(opts.name, version);
-
-    request.onupgradeneeded = (versionChange) => {
-      const database = request.result;
-      opts.schema
-        .filter((schema) => schema.version > versionChange.oldVersion)
-        .forEach((schema) => {
-          const stores = schema.stores;
-          stores.forEach((store) => {
-            const objStore = database.createObjectStore(
-              store.name,
-              store.options
-            );
-            (store.indexes || []).forEach((index) =>
-              objStore.createIndex(index.name, index.keyPath, index.options)
-            );
-          });
-        });
-      opts.onUpgrade(
-        database,
-        versionChange.oldVersion,
-        versionChange.newVersion,
-        ((versionChange.target as unknown) as { transaction: IDBTransaction })
-          .transaction
-      );
-    };
-
-    request.onsuccess = () => {
-      // const setDb = () => (this.db$ = database$.pipe(shareReplay(1)));
-      // request.result.onversionchange = () => {
-      //   console.log('version change');
-      //   request.result.close();
-      //   // setDb();
-      // };
-      // request.result.onclose = () => {
-      //   console.log('onClose');
-      //   // setDb();
-      // };
-      // request.result.addEventListener('error', () => console.log('error'));
-      // request.result.addEventListener('close', () => console.log('close'));
-      if (opts.autoCloseOnVersionChange) {
-        request.result.addEventListener('versionchange', () => {
-          request.result.close();
-        });
-      }
-      subscriber.next(new ReactiveIDBDatabase(request.result));
-      subscriber.complete();
-    };
-
-    request.onblocked = (ev) => {
-      request.result.close();
-      subscriber.error(ev);
-    };
-
-    request.onerror = (ev) => {
-      request.result?.close();
-      subscriber.error(ev);
-    };
-  });
-};
 
 export class ReactiveIDBDatabase {
   /**
@@ -210,6 +78,12 @@ export class ReactiveIDBDatabase {
     return this.database.deleteObjectStore(name);
   }
 
+  /**
+   *
+   * @param type
+   * @param listener
+   * @param options
+   */
   addEventListener<K extends keyof IDBDatabaseEventMap>(
     type: K,
     listener: (this: IDBDatabase, ev: IDBDatabaseEventMap[K]) => void,
@@ -218,6 +92,12 @@ export class ReactiveIDBDatabase {
     this.database.addEventListener(type, listener, options);
   }
 
+  /**
+   *
+   * @param type
+   * @param listener
+   * @param options
+   */
   removeEventListener<K extends keyof IDBDatabaseEventMap>(
     type: K,
     listener: (this: IDBDatabase, ev: IDBDatabaseEventMap[K]) => void,
