@@ -5,26 +5,28 @@ export class ReactiveIDBDatabase {
   /**
    * Returns the name of the database.
    */
-  readonly name: string;
+  get name(): string {
+    return this.database.name;
+  }
 
   /**
    * Returns a list of the names of object stores in the database.
    */
-  readonly objectStoreNames: DOMStringList;
+  get objectStoreNames(): DOMStringList {
+    return this.database.objectStoreNames;
+  }
 
   /**
    * Returns the version of the database.
    */
-  readonly version: number;
+  get version(): number {
+    return this.database.version;
+  }
 
   /**
    * @param database
    */
-  constructor(private readonly database: IDBDatabase) {
-    this.name = database.name;
-    this.objectStoreNames = database.objectStoreNames;
-    this.version = database.version;
-  }
+  constructor(private readonly database: IDBDatabase) {}
 
   /**
    * Closes the connection once all running transactions have finished.
@@ -60,23 +62,23 @@ export class ReactiveIDBDatabase {
    *
    * Throws a "InvalidStateError" DOMException if not called within an upgrade transaction.
    */
-  createObjectStore(
-    name: string,
-    options?: IDBObjectStoreParameters
-  ): ReactiveIDBObjectStore {
-    return new ReactiveIDBObjectStore(
-      this.database.createObjectStore(name, options)
-    );
-  }
+  // createObjectStore(
+  //   name: string,
+  //   options?: IDBObjectStoreParameters
+  // ): ReactiveIDBObjectStore {
+  //   return new ReactiveIDBObjectStore(
+  //     this.database.createObjectStore(name, options)
+  //   );
+  // }
 
   /**
    * Deletes the object store with the given name.
    *
    * Throws a "InvalidStateError" DOMException if not called within an upgrade transaction.
    */
-  deleteObjectStore(name: string): void {
-    return this.database.deleteObjectStore(name);
-  }
+  // deleteObjectStore(name: string): void {
+  //   return this.database.deleteObjectStore(name);
+  // }
 
   /**
    *

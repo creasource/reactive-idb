@@ -52,7 +52,7 @@ describe('ReactiveIDBDatabase', () => {
 
     it('should close', () => {
       db.close();
-      expect(() => db.objectStore('store1')).to.throw;
+      cy.wrap(() => db.objectStore('store1')).should('throw');
     });
 
     it('should create a transaction', () => {

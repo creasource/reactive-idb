@@ -1,34 +1,43 @@
 import { Observable } from 'rxjs';
 
+import { ReactiveIDBTransaction } from './reactive-idb-transaction';
+
 export class ReactiveIDBObjectStore {
   /**
    * Returns true if the store has a key generator, and false otherwise.
    */
-  readonly autoIncrement: boolean;
+  get autoIncrement(): boolean {
+    return this.store.autoIncrement;
+  }
   /**
    * Returns a list of the names of indexes in the store.
    */
-  readonly indexNames: DOMStringList;
+  get indexNames(): DOMStringList {
+    return this.store.indexNames;
+  }
   /**
    * Returns the key path of the store, or null if none.
    */
-  readonly keyPath: null | string | string[];
+  get keyPath(): null | string | string[] {
+    return this.store.keyPath;
+  }
   /**
    * Returns the name of the store.
    */
-  name: string;
+  get name(): string {
+    return this.store.name;
+  }
   /**
    * Returns the associated transaction.
    */
-  readonly transaction: IDBTransaction;
-
-  constructor(private readonly store: IDBObjectStore) {
-    this.autoIncrement = store.autoIncrement;
-    this.indexNames = store.indexNames;
-    this.keyPath = store.keyPath;
-    this.name = store.name;
-    this.transaction = store.transaction;
+  get transaction(): ReactiveIDBTransaction {
+    return this.transaction_;
   }
+
+  constructor(
+    private readonly store: IDBObjectStore,
+    private transaction_: ReactiveIDBTransaction
+  ) {}
 
   /**
    * Adds or updates a record in store with the given value and key.
@@ -40,23 +49,19 @@ export class ReactiveIDBObjectStore {
    * If successful, request's result will be the record's key.
    */
   add(value: any, key?: IDBValidKey): Observable<IDBValidKey> {
-    return this.wrap$(this.store.add(value, key));
+    return this.wrapRequest(() => this.store.add(value, key));
   }
   /**
    * Deletes all records in store.
-   *
-   * If successful, request's result will be undefined.
    */
   clear(): Observable<undefined> {
-    return this.wrap$(this.store.clear());
+    return this.wrapRequest(() => this.store.clear());
   }
   /**
    * Retrieves the number of records matching the given key or key range in query.
-   *
-   * If successful, request's result will be the count.
    */
   count(key?: IDBValidKey | IDBKeyRange): Observable<number> {
-    return this.wrap$(this.store.count(key));
+    return this.wrapRequest(() => this.store.count(key));
   }
   /**
    * Creates a new index in store with the given name, keyPath and options and returns a new IDBIndex. If the keyPath and options define constraints that cannot be satisfied with the data already in store the upgrade transaction will abort with a "ConstraintError" DOMException.
@@ -76,7 +81,7 @@ export class ReactiveIDBObjectStore {
    * If successful, request's result will be undefined.
    */
   delete(key: IDBValidKey | IDBKeyRange): Observable<undefined> {
-    return this.wrap$(this.store.delete(key));
+    return this.wrapRequest(() => this.store.delete(key));
   }
   /**
    * Deletes the index in store with the given name.
@@ -92,7 +97,7 @@ export class ReactiveIDBObjectStore {
    * If successful, request's result will be the value, or undefined if there was no matching record.
    */
   get(query: IDBValidKey | IDBKeyRange): Observable<any | undefined> {
-    return this.wrap$(this.store.get(query));
+    return this.wrapRequest(() => this.store.get(query));
   }
   /**
    * Retrieves the values of the records matching the given key or key range in query (up to count if given).
@@ -103,7 +108,7 @@ export class ReactiveIDBObjectStore {
     query?: IDBValidKey | IDBKeyRange | null,
     count?: number
   ): Observable<any[]> {
-    return this.wrap$(this.store.getAll(query, count));
+    return this.wrapRequest(() => this.store.getAll(query, count));
   }
   /**
    * Retrieves the keys of records matching the given key or key range in query (up to count if given).
@@ -114,7 +119,7 @@ export class ReactiveIDBObjectStore {
     query?: IDBValidKey | IDBKeyRange | null,
     count?: number
   ): Observable<IDBValidKey[]> {
-    return this.wrap$(this.store.getAllKeys(query, count));
+    return this.wrapRequest(() => this.store.getAllKeys(query, count));
   }
   /**
    * Retrieves the key of the first record matching the given key or key range in query.
@@ -124,7 +129,7 @@ export class ReactiveIDBObjectStore {
   getKey(
     query: IDBValidKey | IDBKeyRange
   ): Observable<IDBValidKey | undefined> {
-    return this.wrap$(this.store.getKey(query));
+    return this.wrapRequest(() => this.store.getKey(query));
   }
 
   index(name: string): IDBIndex {
@@ -139,7 +144,7 @@ export class ReactiveIDBObjectStore {
     query?: IDBValidKey | IDBKeyRange | null,
     direction?: IDBCursorDirection
   ): Observable<IDBCursorWithValue | null> {
-    return this.wrap$(this.store.openCursor(query, direction));
+    return this.wrapRequest(() => this.store.openCursor(query, direction));
   }
   /**
    * Opens a cursor with key only flag set over the records matching query, ordered by direction. If query is null, all records in store are matched.
@@ -150,7 +155,7 @@ export class ReactiveIDBObjectStore {
     query?: IDBValidKey | IDBKeyRange | null,
     direction?: IDBCursorDirection
   ): Observable<IDBCursor | null> {
-    return this.wrap$(this.store.openKeyCursor(query, direction));
+    return this.wrapRequest(() => this.store.openKeyCursor(query, direction));
   }
   /**
    * Adds or updates a record in store with the given value and key.
@@ -162,16 +167,17 @@ export class ReactiveIDBObjectStore {
    * If successful, request's result will be the record's key.
    */
   put(value: any, key?: IDBValidKey): Observable<IDBValidKey> {
-    return this.wrap$(this.store.put(value, key));
+    return this.wrapRequest(() => this.store.put(value, key));
   }
 
-  private wrap$<T>(request: IDBRequest<T>): Observable<T> {
+  private wrapRequest<T>(request: () => IDBRequest<T>): Observable<T> {
     return new Observable((observer) => {
-      request.onsuccess = () => {
-        observer.next(request.result);
+      const req = request();
+      req.onsuccess = () => {
+        observer.next(req.result);
         observer.complete();
       };
-      request.onerror = (ev) => observer.error((ev.target as IDBRequest).error);
+      req.onerror = (ev) => observer.error((ev.target as IDBRequest).error);
     });
   }
 }

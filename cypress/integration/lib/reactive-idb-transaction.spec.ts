@@ -15,7 +15,7 @@ describe('ReactiveIDBTransaction', () => {
         schema: [{ version: 1, stores: [{ name: 'store' }] }],
       }).subscribe((db) => {
         database = db;
-        transaction = db.transaction('store', 'readwrite');
+        transaction = db.transaction('store', 'readonly');
         done();
       });
     });
@@ -24,16 +24,21 @@ describe('ReactiveIDBTransaction', () => {
       cy.deleteDatabase('testDB');
     });
 
-    it('should return database', () => {
+    it('should have a db property', () => {
       expect(transaction.db).to.equal(database);
     });
 
-    it('should return objectStoreNames', () => {
+    it('should have an objectStoreNames property', () => {
       expect(transaction.objectStoreNames.contains('store')).to.equal(true);
     });
 
-    it('should return mode', () => {
-      expect(transaction.mode).to.equal('readwrite');
+    it('should have a mode property', () => {
+      expect(transaction.mode).to.equal('readonly');
+    });
+
+    it('should have an error property', () => {
+      expect(transaction.error).to.equal(null);
+      transaction.objectStore('store').clear();
     });
 
     it('should abort', (done) => {

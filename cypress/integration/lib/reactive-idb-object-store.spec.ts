@@ -6,7 +6,7 @@ import { createReactiveDatabase, ReactiveIDBObjectStore } from '../../../src';
 describe('ReactiveIDBObjectStore', () => {
   let store: ReactiveIDBObjectStore;
 
-  context('Base methods', () => {
+  describe('Base methods', () => {
     beforeEach((done) => {
       createReactiveDatabase({
         name: 'testDB',
