@@ -1,3 +1,6 @@
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
 import { ReactiveIDBObjectStore } from './reactive-idb-object-store';
 import { ReactiveIDBTransaction } from './reactive-idb-transaction';
 
@@ -50,11 +53,52 @@ export class ReactiveIDBDatabase {
 
   /**
    *
+   * @param names
+   * @param mode
+   */
+  transaction$(
+    names: string | string[],
+    mode?: IDBTransactionMode
+  ): Observable<ReactiveIDBTransaction> {
+    return new Observable<ReactiveIDBTransaction>((observer) => {
+      const transaction = new ReactiveIDBTransaction(
+        this.database.transaction(names, mode),
+        this
+      );
+      transaction.addEventListener('error', (ev) => observer.error(ev));
+      transaction.addEventListener('abort', (ev) => observer.error(ev));
+      transaction.addEventListener('complete', () => observer.complete());
+      observer.next(transaction);
+      return () => {
+        try {
+          transaction.abort();
+          // eslint-disable-next-line no-empty
+        } catch (e) {}
+      };
+    });
+  }
+
+  /**
+   *
    * @param name
    * @param mode
    */
   objectStore(name: string, mode?: IDBTransactionMode): ReactiveIDBObjectStore {
     return this.transaction(name, mode).objectStore(name);
+  }
+
+  /**
+   *
+   * @param name
+   * @param mode
+   */
+  objectStore$(
+    name: string,
+    mode?: IDBTransactionMode
+  ): Observable<ReactiveIDBObjectStore> {
+    return this.transaction$(name, mode).pipe(
+      map((transaction) => transaction.objectStore(name))
+    );
   }
 
   /**
@@ -106,6 +150,25 @@ export class ReactiveIDBDatabase {
     options?: boolean | EventListenerOptions
   ): void {
     this.database.removeEventListener(type, listener, options);
+  }
+
+  /**
+   *
+   * @param onBlocked
+   */
+  clear$(onBlocked?: (event: Event) => void): Observable<void> {
+    return new Observable((observer) => {
+      this.database.close();
+      const request = indexedDB.deleteDatabase(this.name);
+      request.onerror = (event) => observer.error(event);
+      request.onsuccess = () => {
+        observer.next();
+        observer.complete();
+      };
+      if (onBlocked) {
+        request.onblocked = onBlocked;
+      }
+    });
   }
 
   // getDb(options: ReactiveIDBDatabaseOptions): Observable<IDBDatabase> {
@@ -411,21 +474,7 @@ export class ReactiveIDBDatabase {
   //   );
   // }
   //
-  // clear(): Observable<void> {
-  //   return new Observable((observer) => {
-  //     this.db$.subscribe((db) => {
-  //       db.close();
-  //       const a = indexedDB.deleteDatabase(this.dbName);
-  //       a.onerror = (event) => observer.error(event);
-  //       a.onsuccess = () => {
-  //         observer.next();
-  //         observer.complete();
-  //       };
-  //       a.onblocked = (ev) => console.log(ev);
-  //     });
-  //     this.db$ = this.getDb().pipe(shareReplay(1));
-  //   });
-  // }
+
   //
   // private wrap<T>(
   //   action: (_: IDBTransaction) => IDBRequest<T>

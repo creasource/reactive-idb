@@ -1,6 +1,9 @@
+import { asyncScheduler, merge, TimeoutError } from 'rxjs';
+import { concatMap, delay, tap, timeout } from 'rxjs/operators';
 import {
   createReactiveDatabase,
   ReactiveIDBDatabase,
+  ReactiveIDBObjectStore,
   ReactiveIDBTransaction,
 } from '../../../src';
 
@@ -31,11 +34,11 @@ describe('ReactiveIDBDatabase', () => {
     });
   });
 
-  afterEach(() => {
-    cy.deleteDatabase('testDB');
+  afterEach((done) => {
+    db.clear$().subscribe(() => done());
   });
 
-  context('Base methods', () => {
+  describe('Base methods', () => {
     it('should have a name property', () => {
       expect(db.name).to.equal('testDB');
     });
@@ -89,7 +92,107 @@ describe('ReactiveIDBDatabase', () => {
     });
   });
 
-  context('Additional methods', () => {
+  describe('Transaction creation (observable API)', () => {
+    it('should open', (done) => {
+      db.transaction$('store1').subscribe((transaction) => {
+        cy.wrap(transaction)
+          .should('be.instanceOf', ReactiveIDBTransaction)
+          .then(() => done());
+      });
+    });
+
+    it('should complete', (done) => {
+      db.transaction$('store1', 'readwrite')
+        .pipe(
+          concatMap((t) =>
+            merge(
+              t.objectStore('store1').put('key1', 'test'),
+              t.objectStore('store1').put('key2', 'test')
+            )
+          )
+        )
+        .subscribe({
+          error: (err) => done(err),
+          complete: () => done(),
+        });
+    });
+
+    it('should abort', (done) => {
+      db.transaction$('store1')
+        .pipe(tap((t) => t.abort()))
+        .subscribe({
+          error: (err) => {
+            expect(err.type).to.equal('abort');
+            done();
+          },
+        });
+    });
+
+    it('should error (case 1: add same key twice)', (done) => {
+      db.transaction$('store1', 'readwrite')
+        .pipe(
+          concatMap((t) =>
+            merge(
+              t.objectStore('store1').add('value1', 'key'),
+              t.objectStore('store1').add('value2', 'key')
+            )
+          )
+        )
+        .subscribe({
+          error: (err) => {
+            expect(err).to.be.instanceOf(DOMException);
+            done();
+          },
+        });
+    });
+
+    it('should error (case 2: async execution)', (done) => {
+      db.transaction$('store1', 'readwrite')
+        .pipe(
+          // transactions operations must be scheduled synchronously!
+          delay(0, asyncScheduler),
+          concatMap((t) => t.objectStore('store1').add('value', 'key'))
+        )
+        .subscribe({
+          error: (err) => {
+            expect(err).to.be.instanceOf(DOMException);
+            done();
+          },
+        });
+    });
+
+    it('should abort when unsubscribed', (done) => {
+      db.transaction$('store1', 'readwrite')
+        .pipe(
+          concatMap(
+            (t) =>
+              merge(
+                t.objectStore('store1').put('value', 'key'),
+                t.objectStore('store1').put('value', 'key'),
+                t.objectStore('store1').put('value', 'key'),
+                t.objectStore('store1').put('value', 'key'),
+                t.objectStore('store1').put('value', 'key'),
+                t.objectStore('store1').put('value', 'key')
+              ).pipe(timeout(0, asyncScheduler)) // Unsubscribe asynchronously
+          )
+        )
+        .subscribe({
+          error: (err) => {
+            expect(err).to.be.instanceOf(TimeoutError);
+            // Check that the transaction was indeed aborted
+            db.objectStore('store1')
+              .get('key')
+              .subscribe((value) => {
+                expect(value).to.equal(undefined);
+                done();
+              });
+          },
+          complete: () => done('complete'),
+        });
+    });
+  });
+
+  describe('Additional methods', () => {
     it('should return an object store', () => {
       const os1 = db.objectStore('store1');
       expect(os1.name).to.equal('store1');
@@ -100,6 +203,14 @@ describe('ReactiveIDBDatabase', () => {
       expect(os2.name).to.equal('store2');
       expect(os2.transaction.mode).to.equal('readwrite');
       expect(os2.keyPath).to.equal('idKeyPath');
+    });
+
+    it('should return an object store (observable API)', (done) => {
+      db.objectStore$('store1').subscribe((store) => {
+        cy.wrap(store)
+          .should('be.instanceOf', ReactiveIDBObjectStore)
+          .then(() => done());
+      });
     });
   });
 });

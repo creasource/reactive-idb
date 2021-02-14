@@ -68,13 +68,13 @@ export class ReactiveIDBObjectStore {
    *
    * Throws an "InvalidStateError" DOMException if not called within an upgrade transaction.
    */
-  createIndex(
-    name: string,
-    keyPath: string | string[],
-    options?: IDBIndexParameters
-  ): IDBIndex {
-    return this.store.createIndex(name, keyPath, options);
-  }
+  // createIndex(
+  //   name: string,
+  //   keyPath: string | string[],
+  //   options?: IDBIndexParameters
+  // ): IDBIndex {
+  //   return this.store.createIndex(name, keyPath, options);
+  // }
   /**
    * Deletes records in store with the given key or in the given key range in query.
    *
@@ -88,9 +88,9 @@ export class ReactiveIDBObjectStore {
    *
    * Throws an "InvalidStateError" DOMException if not called within an upgrade transaction.
    */
-  deleteIndex(name: string): void {
-    this.store.deleteIndex(name);
-  }
+  // deleteIndex(name: string): void {
+  //   this.store.deleteIndex(name);
+  // }
   /**
    * Retrieves the value of the first record matching the given key or key range in query.
    *
