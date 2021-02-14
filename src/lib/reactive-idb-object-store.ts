@@ -27,16 +27,15 @@ export class ReactiveIDBObjectStore {
   get name(): string {
     return this.store.name;
   }
-  /**
-   * Returns the associated transaction.
-   */
-  get transaction(): ReactiveIDBTransaction {
-    return this.transaction_;
-  }
 
+  /**
+   *
+   * @param store
+   * @param transaction
+   */
   constructor(
     private readonly store: IDBObjectStore,
-    private transaction_: ReactiveIDBTransaction
+    readonly transaction: ReactiveIDBTransaction
   ) {}
 
   /**
@@ -48,19 +47,19 @@ export class ReactiveIDBObjectStore {
    *
    * If successful, request's result will be the record's key.
    */
-  add(value: any, key?: IDBValidKey): Observable<IDBValidKey> {
+  add$(value: any, key?: IDBValidKey): Observable<IDBValidKey> {
     return this.wrapRequest(() => this.store.add(value, key));
   }
   /**
    * Deletes all records in store.
    */
-  clear(): Observable<undefined> {
+  clear$(): Observable<undefined> {
     return this.wrapRequest(() => this.store.clear());
   }
   /**
    * Retrieves the number of records matching the given key or key range in query.
    */
-  count(key?: IDBValidKey | IDBKeyRange): Observable<number> {
+  count$(key?: IDBValidKey | IDBKeyRange): Observable<number> {
     return this.wrapRequest(() => this.store.count(key));
   }
   /**
@@ -80,7 +79,7 @@ export class ReactiveIDBObjectStore {
    *
    * If successful, request's result will be undefined.
    */
-  delete(key: IDBValidKey | IDBKeyRange): Observable<undefined> {
+  delete$(key: IDBValidKey | IDBKeyRange): Observable<undefined> {
     return this.wrapRequest(() => this.store.delete(key));
   }
   /**
@@ -96,7 +95,7 @@ export class ReactiveIDBObjectStore {
    *
    * If successful, request's result will be the value, or undefined if there was no matching record.
    */
-  get(query: IDBValidKey | IDBKeyRange): Observable<any | undefined> {
+  get$(query: IDBValidKey | IDBKeyRange): Observable<any | undefined> {
     return this.wrapRequest(() => this.store.get(query));
   }
   /**
@@ -104,7 +103,7 @@ export class ReactiveIDBObjectStore {
    *
    * If successful, request's result will be an Array of the values.
    */
-  getAll(
+  getAll$(
     query?: IDBValidKey | IDBKeyRange | null,
     count?: number
   ): Observable<any[]> {
@@ -115,7 +114,7 @@ export class ReactiveIDBObjectStore {
    *
    * If successful, request's result will be an Array of the keys.
    */
-  getAllKeys(
+  getAllKeys$(
     query?: IDBValidKey | IDBKeyRange | null,
     count?: number
   ): Observable<IDBValidKey[]> {
@@ -126,12 +125,13 @@ export class ReactiveIDBObjectStore {
    *
    * If successful, request's result will be the key, or undefined if there was no matching record.
    */
-  getKey(
+  getKey$(
     query: IDBValidKey | IDBKeyRange
   ): Observable<IDBValidKey | undefined> {
     return this.wrapRequest(() => this.store.getKey(query));
   }
 
+  // TODO ReactiveIDBIndex
   index(name: string): IDBIndex {
     return this.store.index(name);
   }
@@ -140,7 +140,7 @@ export class ReactiveIDBObjectStore {
    *
    * If successful, request's result will be an IDBCursorWithValue pointing at the first matching record, or null if there were no matching records.
    */
-  openCursor(
+  openCursor$(
     query?: IDBValidKey | IDBKeyRange | null,
     direction?: IDBCursorDirection
   ): Observable<IDBCursorWithValue | null> {
@@ -151,7 +151,7 @@ export class ReactiveIDBObjectStore {
    *
    * If successful, request's result will be an IDBCursor pointing at the first matching record, or null if there were no matching records.
    */
-  openKeyCursor(
+  openKeyCursor$(
     query?: IDBValidKey | IDBKeyRange | null,
     direction?: IDBCursorDirection
   ): Observable<IDBCursor | null> {
@@ -166,7 +166,7 @@ export class ReactiveIDBObjectStore {
    *
    * If successful, request's result will be the record's key.
    */
-  put(value: any, key?: IDBValidKey): Observable<IDBValidKey> {
+  put$(value: any, key?: IDBValidKey): Observable<IDBValidKey> {
     return this.wrapRequest(() => this.store.put(value, key));
   }
 

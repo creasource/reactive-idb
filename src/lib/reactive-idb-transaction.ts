@@ -1,14 +1,9 @@
+import { defer, Observable, of } from 'rxjs';
+
 import { ReactiveIDBDatabase } from './reactive-idb-database';
 import { ReactiveIDBObjectStore } from './reactive-idb-object-store';
 
 export class ReactiveIDBTransaction {
-  /**
-   * Returns the transaction's connection.
-   */
-  get db(): ReactiveIDBDatabase {
-    return this.db_;
-  }
-
   /**
    * If the transaction was aborted, returns the error (a DOMException) providing the reason.
    */
@@ -30,9 +25,15 @@ export class ReactiveIDBTransaction {
     return this.transaction.objectStoreNames;
   }
 
+  /**
+   * Constructs a ReactiveIDBTransaction
+   *
+   * @param transaction The underlying IDBTransaction object
+   * @param db The associated ReactiveIDBDatabase of this transaction
+   */
   constructor(
     private readonly transaction: IDBTransaction,
-    private readonly db_: ReactiveIDBDatabase
+    readonly db: ReactiveIDBDatabase
   ) {}
 
   /**
@@ -47,6 +48,13 @@ export class ReactiveIDBTransaction {
    */
   objectStore(name: string): ReactiveIDBObjectStore {
     return new ReactiveIDBObjectStore(this.transaction.objectStore(name), this);
+  }
+
+  /**
+   * Returns a ReactiveIDBObjectStore in the transaction's scope.
+   */
+  objectStore$(name: string): Observable<ReactiveIDBObjectStore> {
+    return defer(() => of(this.objectStore(name)));
   }
 
   addEventListener<K extends keyof IDBTransactionEventMap>(

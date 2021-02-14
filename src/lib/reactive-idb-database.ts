@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { concatMap } from 'rxjs/operators';
 
 import { ReactiveIDBObjectStore } from './reactive-idb-object-store';
 import { ReactiveIDBTransaction } from './reactive-idb-transaction';
@@ -97,7 +97,7 @@ export class ReactiveIDBDatabase {
     mode?: IDBTransactionMode
   ): Observable<ReactiveIDBObjectStore> {
     return this.transaction$(name, mode).pipe(
-      map((transaction) => transaction.objectStore(name))
+      concatMap((transaction) => transaction.objectStore$(name))
     );
   }
 

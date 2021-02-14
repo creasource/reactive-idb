@@ -1,6 +1,7 @@
 import {
   createReactiveDatabase,
   ReactiveIDBDatabase,
+  ReactiveIDBObjectStore,
   ReactiveIDBTransaction,
 } from '../../../src';
 
@@ -8,20 +9,22 @@ describe('ReactiveIDBTransaction', () => {
   let database: ReactiveIDBDatabase;
   let transaction: ReactiveIDBTransaction;
 
-  describe('Base methods', () => {
-    beforeEach((done) => {
-      createReactiveDatabase({
-        name: 'testDB',
-        schema: [{ version: 1, stores: [{ name: 'store' }] }],
-      }).subscribe((db) => {
-        database = db;
-        transaction = db.transaction('store', 'readonly');
-        done();
-      });
+  const before = (done) => {
+    createReactiveDatabase({
+      name: 'testDB',
+      schema: [{ version: 1, stores: [{ name: 'store' }] }],
+    }).subscribe((db) => {
+      database = db;
+      transaction = db.transaction('store', 'readonly');
+      done();
     });
+  };
 
-    afterEach(() => {
-      cy.deleteDatabase('testDB');
+  describe('Base methods', () => {
+    beforeEach(before);
+
+    afterEach((done) => {
+      database.clear$().subscribe(() => done());
     });
 
     it('should have a db property', () => {
@@ -38,16 +41,23 @@ describe('ReactiveIDBTransaction', () => {
 
     it('should have an error property', () => {
       expect(transaction.error).to.equal(null);
-      transaction.objectStore('store').clear();
+    });
+
+    it('should create an object store', () => {
+      expect(transaction.objectStore('store')).to.be.instanceOf(
+        ReactiveIDBObjectStore
+      );
+      cy.wrap(() => transaction.objectStore('unknown')).should('throw');
     });
 
     it('should abort', (done) => {
       transaction
         .objectStore('store')
-        .openCursor()
+        .openCursor$()
         .subscribe({
           error: (err) => {
             expect(err).to.be.instanceOf(DOMException);
+            expect(err.type).to.equal('abort');
             done();
           },
         });
@@ -69,6 +79,29 @@ describe('ReactiveIDBTransaction', () => {
       transaction.abort();
       expect(f).to.not.have.been.called;
       done();
+    });
+  });
+
+  describe('Observable API', () => {
+    beforeEach(before);
+
+    afterEach((done) => {
+      database.clear$().subscribe(() => done());
+    });
+
+    it('should create an object store', (done) => {
+      transaction.objectStore$('store').subscribe({
+        next: (store) => {
+          expect(store).to.be.instanceOf(ReactiveIDBObjectStore);
+          transaction.objectStore$('unknown').subscribe({
+            error: (err) => {
+              expect(err).to.be.instanceOf(DOMException);
+              expect(err.name).to.equal('NotFoundError');
+              done();
+            },
+          });
+        },
+      });
     });
   });
 });

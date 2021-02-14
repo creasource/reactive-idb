@@ -106,8 +106,8 @@ describe('ReactiveIDBDatabase', () => {
         .pipe(
           concatMap((t) =>
             merge(
-              t.objectStore('store1').put('key1', 'test'),
-              t.objectStore('store1').put('key2', 'test')
+              t.objectStore('store1').put$('key1', 'test'),
+              t.objectStore('store1').put$('key2', 'test')
             )
           )
         )
@@ -133,8 +133,8 @@ describe('ReactiveIDBDatabase', () => {
         .pipe(
           concatMap((t) =>
             merge(
-              t.objectStore('store1').add('value1', 'key'),
-              t.objectStore('store1').add('value2', 'key')
+              t.objectStore('store1').add$('value1', 'key'),
+              t.objectStore('store1').add$('value2', 'key')
             )
           )
         )
@@ -151,7 +151,7 @@ describe('ReactiveIDBDatabase', () => {
         .pipe(
           // transactions operations must be scheduled synchronously!
           delay(0, asyncScheduler),
-          concatMap((t) => t.objectStore('store1').add('value', 'key'))
+          concatMap((t) => t.objectStore('store1').add$('value', 'key'))
         )
         .subscribe({
           error: (err) => {
@@ -167,12 +167,12 @@ describe('ReactiveIDBDatabase', () => {
           concatMap(
             (t) =>
               merge(
-                t.objectStore('store1').put('value', 'key'),
-                t.objectStore('store1').put('value', 'key'),
-                t.objectStore('store1').put('value', 'key'),
-                t.objectStore('store1').put('value', 'key'),
-                t.objectStore('store1').put('value', 'key'),
-                t.objectStore('store1').put('value', 'key')
+                t.objectStore('store1').put$('value', 'key'),
+                t.objectStore('store1').put$('value', 'key'),
+                t.objectStore('store1').put$('value', 'key'),
+                t.objectStore('store1').put$('value', 'key'),
+                t.objectStore('store1').put$('value', 'key'),
+                t.objectStore('store1').put$('value', 'key')
               ).pipe(timeout(0, asyncScheduler)) // Unsubscribe asynchronously
           )
         )
@@ -181,7 +181,7 @@ describe('ReactiveIDBDatabase', () => {
             expect(err).to.be.instanceOf(TimeoutError);
             // Check that the transaction was indeed aborted
             db.objectStore('store1')
-              .get('key')
+              .get$('key')
               .subscribe((value) => {
                 expect(value).to.equal(undefined);
                 done();
