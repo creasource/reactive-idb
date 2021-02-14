@@ -1,5 +1,5 @@
+import { concatMap } from 'rxjs/operators';
 import {
-  createReactiveDatabase,
   ReactiveIDBDatabase,
   ReactiveIDBObjectStore,
   ReactiveIDBTransaction,
@@ -10,12 +10,12 @@ describe('ReactiveIDBTransaction', () => {
   let transaction: ReactiveIDBTransaction;
 
   const before = (done) => {
-    createReactiveDatabase({
+    ReactiveIDBDatabase.create({
       name: 'testDB',
       schema: [{ version: 1, stores: [{ name: 'store' }] }],
     }).subscribe((db) => {
       database = db;
-      transaction = db.transaction('store', 'readonly');
+      transaction = db.transaction('store', 'readwrite');
       done();
     });
   };
@@ -36,7 +36,7 @@ describe('ReactiveIDBTransaction', () => {
     });
 
     it('should have a mode property', () => {
-      expect(transaction.mode).to.equal('readonly');
+      expect(transaction.mode).to.equal('readwrite');
     });
 
     it('should have an error property', () => {
@@ -57,7 +57,7 @@ describe('ReactiveIDBTransaction', () => {
         .subscribe({
           error: (err) => {
             expect(err).to.be.instanceOf(DOMException);
-            expect(err.type).to.equal('abort');
+            expect(err.name).to.equal('AbortError');
             done();
           },
         });
@@ -102,6 +102,25 @@ describe('ReactiveIDBTransaction', () => {
           });
         },
       });
+    });
+
+    it('should create a typed object store', (done) => {
+      transaction
+        .objectStore$<{ value: string }>('store', {
+          serialize: (obj) => obj,
+          deserialize: (v) => v as { value: string },
+        })
+        .subscribe({
+          next: (store) => {
+            store
+              .add$({ value: 'value' }, 'key')
+              .pipe(concatMap((key) => store.get$(key)))
+              .subscribe((result) => {
+                expect(result.value).to.equal('value');
+                done();
+              });
+          },
+        });
     });
   });
 });

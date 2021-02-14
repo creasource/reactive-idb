@@ -1,7 +1,10 @@
 import { defer, Observable, of } from 'rxjs';
 
 import { ReactiveIDBDatabase } from './reactive-idb-database';
-import { ReactiveIDBObjectStore } from './reactive-idb-object-store';
+import {
+  ReactiveIDBObjectStore,
+  Transformer,
+} from './reactive-idb-object-store';
 
 export class ReactiveIDBTransaction {
   /**
@@ -46,15 +49,59 @@ export class ReactiveIDBTransaction {
   /**
    * Returns a ReactiveIDBObjectStore in the transaction's scope.
    */
-  objectStore(name: string): ReactiveIDBObjectStore {
-    return new ReactiveIDBObjectStore(this.transaction.objectStore(name), this);
+  objectStore(name: string): ReactiveIDBObjectStore;
+
+  /**
+   * Returns a ReactiveIDBObjectStore in the transaction's scope.
+   */
+  objectStore<T>(
+    name: string,
+    transformer: Transformer<T>
+  ): ReactiveIDBObjectStore<T>;
+
+  /**
+   * Returns a ReactiveIDBObjectStore in the transaction's scope.
+   */
+  objectStore<T>(
+    name: string,
+    transformer?: Transformer<T>
+  ): ReactiveIDBObjectStore<T> | ReactiveIDBObjectStore {
+    return transformer
+      ? ReactiveIDBObjectStore.create(
+          this.transaction.objectStore(name),
+          this,
+          transformer
+        )
+      : ReactiveIDBObjectStore.create(this.transaction.objectStore(name), this);
   }
 
   /**
    * Returns a ReactiveIDBObjectStore in the transaction's scope.
    */
-  objectStore$(name: string): Observable<ReactiveIDBObjectStore> {
-    return defer(() => of(this.objectStore(name)));
+  objectStore$(name: string): Observable<ReactiveIDBObjectStore>;
+
+  /**
+   * Returns a ReactiveIDBObjectStore in the transaction's scope.
+   */
+  objectStore$<T>(
+    name: string,
+    transformer: Transformer<T>
+  ): Observable<ReactiveIDBObjectStore<T>>;
+
+  /**
+   * Returns a ReactiveIDBObjectStore in the transaction's scope.
+   */
+  objectStore$<T>(
+    name: string,
+    transformer?: Transformer<T>
+  ): Observable<ReactiveIDBObjectStore<T> | ReactiveIDBObjectStore> {
+    return defer(() =>
+      of(
+        transformer
+          ? this.objectStore<T>(name, transformer)
+          : this.objectStore(name)
+      )
+    );
   }
 
   addEventListener<K extends keyof IDBTransactionEventMap>(

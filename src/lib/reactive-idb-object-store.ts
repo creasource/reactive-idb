@@ -1,8 +1,14 @@
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { ReactiveIDBTransaction } from './reactive-idb-transaction';
 
-export class ReactiveIDBObjectStore {
+export interface Transformer<T> {
+  serialize: (obj: T) => unknown;
+  deserialize: (value: unknown) => T;
+}
+
+export class ReactiveIDBObjectStore<T = unknown> {
   /**
    * Returns true if the store has a key generator, and false otherwise.
    */
@@ -32,11 +38,48 @@ export class ReactiveIDBObjectStore {
    *
    * @param store
    * @param transaction
+   * @param transformer
    */
-  constructor(
+  private constructor(
     private readonly store: IDBObjectStore,
-    readonly transaction: ReactiveIDBTransaction
+    readonly transaction: ReactiveIDBTransaction,
+    readonly transformer: Transformer<T>
   ) {}
+
+  /**
+   *
+   * @param store
+   * @param transaction
+   */
+  static create(
+    store: IDBObjectStore,
+    transaction: ReactiveIDBTransaction
+  ): ReactiveIDBObjectStore;
+
+  /**
+   *
+   * @param store
+   * @param transaction
+   * @param transformer
+   */
+  static create<T>(
+    store: IDBObjectStore,
+    transaction: ReactiveIDBTransaction,
+    transformer: Transformer<T>
+  ): ReactiveIDBObjectStore<T>;
+
+  static create<T>(
+    store: IDBObjectStore,
+    transaction: ReactiveIDBTransaction,
+    transformer?: Transformer<T>
+  ): ReactiveIDBObjectStore<T> | ReactiveIDBObjectStore {
+    return transformer
+      ? new ReactiveIDBObjectStore(store, transaction, transformer)
+      : new ReactiveIDBObjectStore(store, transaction, {
+          serialize: (obj) => obj,
+          deserialize: (value) => value,
+        });
+  }
 
   /**
    * Adds or updates a record in store with the given value and key.
@@ -47,8 +90,10 @@ export class ReactiveIDBObjectStore {
    *
    * If successful, request's result will be the record's key.
    */
-  add$(value: any, key?: IDBValidKey): Observable<IDBValidKey> {
-    return this.wrapRequest(() => this.store.add(value, key));
+  add$(value: T, key?: IDBValidKey): Observable<IDBValidKey> {
+    return this.wrapRequest(() =>
+      this.store.add(this.transformer.serialize(value), key)
+    );
   }
   /**
    * Deletes all records in store.
@@ -95,8 +140,12 @@ export class ReactiveIDBObjectStore {
    *
    * If successful, request's result will be the value, or undefined if there was no matching record.
    */
-  get$(query: IDBValidKey | IDBKeyRange): Observable<any | undefined> {
-    return this.wrapRequest(() => this.store.get(query));
+  get$(query: IDBValidKey | IDBKeyRange): Observable<T | undefined> {
+    return this.wrapRequest(() => this.store.get(query)).pipe(
+      map((value) =>
+        value !== undefined ? this.transformer.deserialize(value) : value
+      )
+    );
   }
   /**
    * Retrieves the values of the records matching the given key or key range in query (up to count if given).
@@ -106,8 +155,10 @@ export class ReactiveIDBObjectStore {
   getAll$(
     query?: IDBValidKey | IDBKeyRange | null,
     count?: number
-  ): Observable<any[]> {
-    return this.wrapRequest(() => this.store.getAll(query, count));
+  ): Observable<T[]> {
+    return this.wrapRequest(() => this.store.getAll(query, count)).pipe(
+      map((values) => values.map((v) => this.transformer.deserialize(v)))
+    );
   }
   /**
    * Retrieves the keys of records matching the given key or key range in query (up to count if given).
@@ -166,11 +217,15 @@ export class ReactiveIDBObjectStore {
    *
    * If successful, request's result will be the record's key.
    */
-  put$(value: any, key?: IDBValidKey): Observable<IDBValidKey> {
-    return this.wrapRequest(() => this.store.put(value, key));
+  put$(value: T, key?: IDBValidKey): Observable<IDBValidKey> {
+    return this.wrapRequest(() =>
+      this.store.put(this.transformer.serialize(value), key)
+    );
   }
 
-  private wrapRequest<T>(request: () => IDBRequest<T>): Observable<T> {
+  private wrapRequest<Result>(
+    request: () => IDBRequest<Result>
+  ): Observable<Result> {
     return new Observable((observer) => {
       const req = request();
       req.onsuccess = () => {

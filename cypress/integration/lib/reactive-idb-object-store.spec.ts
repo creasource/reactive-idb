@@ -1,17 +1,17 @@
 import { forkJoin } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 
-import { createReactiveDatabase, ReactiveIDBObjectStore } from '../../../src';
+import { ReactiveIDBDatabase, ReactiveIDBObjectStore } from '../../../src';
 
 describe('ReactiveIDBObjectStore', () => {
   let store: ReactiveIDBObjectStore;
 
   const before = (done) => {
-    createReactiveDatabase({
+    ReactiveIDBDatabase.create({
       name: 'testDB',
       schema: [{ version: 1, stores: [{ name: 'store', indexes: ['index'] }] }],
     }).subscribe((db) => {
-      store = db.objectStore('store', 'readwrite');
+      store = db.transaction('store', 'readwrite').objectStore('store');
       done();
     });
   };
