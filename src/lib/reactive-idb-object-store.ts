@@ -40,46 +40,14 @@ export class ReactiveIDBObjectStore<T = unknown> {
    * @param transaction
    * @param transformer
    */
-  private constructor(
+  constructor(
     private readonly store: IDBObjectStore,
     readonly transaction: ReactiveIDBTransaction,
-    readonly transformer: Transformer<T>
+    readonly transformer: Transformer<T> = {
+      serialize: (o) => o,
+      deserialize: (v) => v as T,
+    }
   ) {}
-
-  /**
-   *
-   * @param store
-   * @param transaction
-   */
-  static create(
-    store: IDBObjectStore,
-    transaction: ReactiveIDBTransaction
-  ): ReactiveIDBObjectStore;
-
-  /**
-   *
-   * @param store
-   * @param transaction
-   * @param transformer
-   */
-  static create<T>(
-    store: IDBObjectStore,
-    transaction: ReactiveIDBTransaction,
-    transformer: Transformer<T>
-  ): ReactiveIDBObjectStore<T>;
-
-  static create<T>(
-    store: IDBObjectStore,
-    transaction: ReactiveIDBTransaction,
-    transformer?: Transformer<T>
-  ): ReactiveIDBObjectStore<T> | ReactiveIDBObjectStore {
-    return transformer
-      ? new ReactiveIDBObjectStore(store, transaction, transformer)
-      : new ReactiveIDBObjectStore(store, transaction, {
-          serialize: (obj) => obj,
-          deserialize: (value) => value,
-        });
-  }
 
   /**
    * Adds or updates a record in store with the given value and key.

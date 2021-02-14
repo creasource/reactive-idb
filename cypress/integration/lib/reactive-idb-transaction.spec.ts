@@ -1,4 +1,5 @@
 import { concatMap } from 'rxjs/operators';
+
 import {
   ReactiveIDBDatabase,
   ReactiveIDBObjectStore,

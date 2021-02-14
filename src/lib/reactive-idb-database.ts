@@ -204,12 +204,6 @@ export class ReactiveIDBDatabase {
         this.database.transaction(names, mode),
         this
       );
-      // transaction.addEventListener('error', (ev) =>
-      //   observer.error((ev.target as any).error)
-      // );
-      // transaction.addEventListener('abort', (ev) =>
-      //   observer.error(transaction.error)
-      // );
       transaction.addEventListener('complete', () => observer.complete());
       observer.next(transaction);
       return () => {

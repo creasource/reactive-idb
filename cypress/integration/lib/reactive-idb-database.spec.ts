@@ -1,5 +1,6 @@
 import { asyncScheduler, fromEvent, merge, TimeoutError } from 'rxjs';
 import { concatMap, delay, publish, tap, timeout } from 'rxjs/operators';
+
 import { ReactiveIDBDatabase, ReactiveIDBTransaction } from '../../../src';
 
 describe('ReactiveIDBDatabase', () => {
@@ -237,24 +238,7 @@ describe('ReactiveIDBDatabase', () => {
     beforeEach((done) => {
       ReactiveIDBDatabase.create({
         name: 'testDB',
-        schema: [
-          { version: 1, stores: ['store1'] },
-          {
-            version: 2,
-            stores: [
-              {
-                name: 'store2',
-                options: {
-                  keyPath: 'idKeyPath',
-                },
-                indexes: [
-                  'index1',
-                  { name: 'index2', keyPath: 'indexKeyPath' },
-                ],
-              },
-            ],
-          },
-        ],
+        schema: [{ version: 1, stores: ['store1'] }],
       }).subscribe((database) => {
         db = database;
         done();
@@ -270,13 +254,12 @@ describe('ReactiveIDBDatabase', () => {
     });
 
     it('should have a version property', () => {
-      expect(db.version).to.equal(2);
+      expect(db.version).to.equal(1);
     });
 
     it('should have an objectStoreNames property', () => {
       expect(db.objectStoreNames.length).to.equal(2);
       expect(db.objectStoreNames.contains('store1')).to.equal(true);
-      expect(db.objectStoreNames.contains('store2')).to.equal(true);
     });
 
     it('should close', () => {
@@ -289,9 +272,6 @@ describe('ReactiveIDBDatabase', () => {
       expect(t1).to.be.instanceOf(ReactiveIDBTransaction);
       expect(t1.db).to.equal(db);
       expect(t1.mode).to.equal('readonly');
-
-      const t2 = db.transaction('store2', 'readwrite');
-      expect(t2.mode).to.equal('readwrite');
     });
 
     it('should addEventListener', () => {

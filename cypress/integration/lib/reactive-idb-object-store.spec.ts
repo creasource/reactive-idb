@@ -4,14 +4,16 @@ import { concatMap } from 'rxjs/operators';
 import { ReactiveIDBDatabase, ReactiveIDBObjectStore } from '../../../src';
 
 describe('ReactiveIDBObjectStore', () => {
-  let store: ReactiveIDBObjectStore;
+  let store: ReactiveIDBObjectStore<{ index: string }>;
 
   const before = (done) => {
     ReactiveIDBDatabase.create({
       name: 'testDB',
       schema: [{ version: 1, stores: [{ name: 'store', indexes: ['index'] }] }],
     }).subscribe((db) => {
-      store = db.transaction('store', 'readwrite').objectStore('store');
+      store = db
+        .transaction('store', 'readwrite')
+        .objectStore<{ index: string }>('store');
       done();
     });
   };
@@ -50,7 +52,7 @@ describe('ReactiveIDBObjectStore', () => {
     });
 
     it('should add$', (done) => {
-      store.add$('testValue', 'testKey').subscribe((key) => {
+      store.add$({ index: 'testValue' }, 'testKey').subscribe((key) => {
         expect(key).to.equal('testKey');
         done();
       });
@@ -58,17 +60,17 @@ describe('ReactiveIDBObjectStore', () => {
 
     it('should get$', (done) => {
       store
-        .add$('testValue', 'testKey')
+        .add$({ index: 'testValue' }, 'testKey')
         .pipe(concatMap((key) => store.get$(key)))
         .subscribe((value) => {
-          expect(value).to.equal('testValue');
+          expect(value).to.deep.equal({ index: 'testValue' });
           done();
         });
     });
 
     it('should clear$', (done) => {
       store
-        .add$('testValue', 'testKey')
+        .add$({ index: 'testValue' }, 'testKey')
         .pipe(concatMap(() => store.clear$()))
         .pipe(concatMap(() => store.get$('testKey')))
         .subscribe((value) => {
@@ -79,7 +81,7 @@ describe('ReactiveIDBObjectStore', () => {
 
     it('should count$', (done) => {
       store
-        .add$('testValue', 'testKey')
+        .add$({ index: 'testValue' }, 'testKey')
         .pipe(concatMap(() => store.count$()))
         .subscribe((value) => {
           expect(value).to.equal(1);
@@ -89,7 +91,7 @@ describe('ReactiveIDBObjectStore', () => {
 
     it('should delete$', (done) => {
       store
-        .add$('testValue', 'testKey')
+        .add$({ index: 'testValue' }, 'testKey')
         .pipe(concatMap((key) => store.delete$(key)))
         .pipe(concatMap(() => store.get$('testKey')))
         .subscribe((value) => {
@@ -100,36 +102,37 @@ describe('ReactiveIDBObjectStore', () => {
 
     it('should getAll$', (done) => {
       forkJoin([
-        store.add$('testValue', 'testKey'),
-        store.add$('testValue2', 'testKey2'),
+        store.add$({ index: 'testValue' }, 'testKey'),
+        store.add$({ index: 'testValue2' }, 'testKey2'),
       ])
         .pipe(concatMap(() => store.getAll$(IDBKeyRange.bound('a', 'z'))))
         .subscribe((values) => {
           expect(values).to.have.length(2);
-          expect(values).to.contain('testValue');
-          expect(values).to.contain('testValue2');
+          expect(values).to.eql([
+            { index: 'testValue' },
+            { index: 'testValue2' },
+          ]);
           done();
         });
     });
 
     it('should getAllKeys$', (done) => {
       forkJoin([
-        store.add$('testValue', 'testKey'),
-        store.add$('testValue2', 'testKey2'),
+        store.add$({ index: 'testValue' }, 'testKey'),
+        store.add$({ index: 'testValue2' }, 'testKey2'),
       ])
         .pipe(concatMap(() => store.getAllKeys$(IDBKeyRange.bound('a', 'z'))))
         .subscribe((values) => {
           expect(values).to.have.length(2);
-          expect(values).to.contain('testKey');
-          expect(values).to.contain('testKey2');
+          expect(values).to.eql(['testKey', 'testKey2']);
           done();
         });
     });
 
     it('should getKey$', (done) => {
       forkJoin([
-        store.add$('testValue', 'testKey'),
-        store.add$('testValue2', 'testKey2'),
+        store.add$({ index: 'testValue' }, 'testKey'),
+        store.add$({ index: 'testValue2' }, 'testKey2'),
       ])
         .pipe(concatMap(() => store.getKey$(IDBKeyRange.bound('a', 'z'))))
         .subscribe((key) => {
@@ -140,13 +143,13 @@ describe('ReactiveIDBObjectStore', () => {
 
     it('should put$', (done) => {
       store
-        .add$('testValue', 'testKey')
+        .add$({ index: 'testValue' }, 'testKey')
         .pipe(
-          concatMap((key) => store.put$('testValue2', key)),
+          concatMap((key) => store.put$({ index: 'testValue2' }, key)),
           concatMap((key) => store.get$(key))
         )
         .subscribe((value) => {
-          expect(value).to.equal('testValue2');
+          expect(value).to.deep.equal({ index: 'testValue2' });
           done();
         });
     });

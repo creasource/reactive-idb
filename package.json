@@ -1,5 +1,5 @@
 {
-  "name": "reactive-idb",
+  "name": "@creasource/reactive-idb",
   "version": "1.0.0",
   "description": "A reactive wrapper to indexedDb using Rxjs",
   "main": "build/main/index.js",

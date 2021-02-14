@@ -49,30 +49,18 @@ export class ReactiveIDBTransaction {
   /**
    * Returns a ReactiveIDBObjectStore in the transaction's scope.
    */
-  objectStore(name: string): ReactiveIDBObjectStore;
-
-  /**
-   * Returns a ReactiveIDBObjectStore in the transaction's scope.
-   */
-  objectStore<T>(
+  objectStore<T = unknown>(
     name: string,
-    transformer: Transformer<T>
-  ): ReactiveIDBObjectStore<T>;
-
-  /**
-   * Returns a ReactiveIDBObjectStore in the transaction's scope.
-   */
-  objectStore<T>(
-    name: string,
-    transformer?: Transformer<T>
-  ): ReactiveIDBObjectStore<T> | ReactiveIDBObjectStore {
-    return transformer
-      ? ReactiveIDBObjectStore.create(
-          this.transaction.objectStore(name),
-          this,
-          transformer
-        )
-      : ReactiveIDBObjectStore.create(this.transaction.objectStore(name), this);
+    transformer: Transformer<T> = {
+      serialize: (o) => o,
+      deserialize: (v) => v as T,
+    }
+  ): ReactiveIDBObjectStore<T> {
+    return new ReactiveIDBObjectStore(
+      this.transaction.objectStore(name),
+      this,
+      transformer
+    );
   }
 
   /**
