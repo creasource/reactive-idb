@@ -6,3 +6,4 @@ workflows:
     jobs:
       - cypress/run:
           yarn: true
+          executor: cypress/base-14
