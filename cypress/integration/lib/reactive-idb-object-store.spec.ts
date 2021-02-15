@@ -1,5 +1,5 @@
 import { forkJoin } from 'rxjs';
-import { concatMap } from 'rxjs/operators';
+import { concatMap, map, reduce, takeWhile, tap } from 'rxjs/operators';
 
 import { ReactiveIDBDatabase, ReactiveIDBObjectStore } from '../../../src';
 
@@ -150,6 +150,51 @@ describe('ReactiveIDBObjectStore', () => {
         )
         .subscribe((value) => {
           expect(value).to.deep.equal({ index: 'testValue2' });
+          done();
+        });
+    });
+
+    it('should openCursor$', (done) => {
+      forkJoin([
+        store.add$({ index: 'testValue' }, 'testKey'),
+        store.add$({ index: 'testValue2' }, 'testKey2'),
+      ])
+        .pipe(
+          concatMap(() =>
+            store.openCursor$(IDBKeyRange.bound('a', 'z')).pipe(
+              takeWhile((cursor) => !!cursor),
+              tap((cursor) => cursor.continue()),
+              map((cursor) => cursor.value as { index: string }),
+              reduce((acc, curr) => [...acc, curr], [] as { index: string }[])
+            )
+          )
+        )
+        .subscribe((results) => {
+          expect(results).to.eql([
+            { index: 'testValue' },
+            { index: 'testValue2' },
+          ]);
+          done();
+        });
+    });
+
+    it('should openKeyCursor$', (done) => {
+      forkJoin([
+        store.add$({ index: 'testValue' }, 'testKey'),
+        store.add$({ index: 'testValue2' }, 'testKey2'),
+      ])
+        .pipe(
+          concatMap(() =>
+            store.openKeyCursor$(IDBKeyRange.bound('a', 'z')).pipe(
+              takeWhile((cursor) => !!cursor),
+              tap((cursor) => cursor.continue()),
+              map((cursor) => cursor.key),
+              reduce((acc, curr) => [...acc, curr], [] as string[])
+            )
+          )
+        )
+        .subscribe((results) => {
+          expect(results).to.eql(['testKey', 'testKey2']);
           done();
         });
     });

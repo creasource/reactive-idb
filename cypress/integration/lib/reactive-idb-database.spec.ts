@@ -258,7 +258,7 @@ describe('ReactiveIDBDatabase', () => {
     });
 
     it('should have an objectStoreNames property', () => {
-      expect(db.objectStoreNames.length).to.equal(2);
+      expect(db.objectStoreNames.length).to.equal(1);
       expect(db.objectStoreNames.contains('store1')).to.equal(true);
     });
 

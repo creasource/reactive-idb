@@ -1,7 +1,9 @@
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { ReactiveIDBIndex } from './reactive-idb-index';
 import { ReactiveIDBTransaction } from './reactive-idb-transaction';
+import { wrapRequest } from './utils/wrap-request.util';
 
 export interface Transformer<T> {
   serialize: (obj: T) => unknown;
@@ -59,22 +61,25 @@ export class ReactiveIDBObjectStore<T = unknown> {
    * If successful, request's result will be the record's key.
    */
   add$(value: T, key?: IDBValidKey): Observable<IDBValidKey> {
-    return this.wrapRequest(() =>
+    return wrapRequest(() =>
       this.store.add(this.transformer.serialize(value), key)
     );
   }
+
   /**
    * Deletes all records in store.
    */
   clear$(): Observable<undefined> {
-    return this.wrapRequest(() => this.store.clear());
+    return wrapRequest(() => this.store.clear());
   }
+
   /**
    * Retrieves the number of records matching the given key or key range in query.
    */
   count$(key?: IDBValidKey | IDBKeyRange): Observable<number> {
-    return this.wrapRequest(() => this.store.count(key));
+    return wrapRequest(() => this.store.count(key));
   }
+
   /**
    * Creates a new index in store with the given name, keyPath and options and returns a new IDBIndex. If the keyPath and options define constraints that cannot be satisfied with the data already in store the upgrade transaction will abort with a "ConstraintError" DOMException.
    *
@@ -87,14 +92,16 @@ export class ReactiveIDBObjectStore<T = unknown> {
   // ): IDBIndex {
   //   return this.store.createIndex(name, keyPath, options);
   // }
+
   /**
    * Deletes records in store with the given key or in the given key range in query.
    *
    * If successful, request's result will be undefined.
    */
   delete$(key: IDBValidKey | IDBKeyRange): Observable<undefined> {
-    return this.wrapRequest(() => this.store.delete(key));
+    return wrapRequest(() => this.store.delete(key));
   }
+
   /**
    * Deletes the index in store with the given name.
    *
@@ -103,18 +110,20 @@ export class ReactiveIDBObjectStore<T = unknown> {
   // deleteIndex(name: string): void {
   //   this.store.deleteIndex(name);
   // }
+
   /**
    * Retrieves the value of the first record matching the given key or key range in query.
    *
    * If successful, request's result will be the value, or undefined if there was no matching record.
    */
   get$(query: IDBValidKey | IDBKeyRange): Observable<T | undefined> {
-    return this.wrapRequest(() => this.store.get(query)).pipe(
+    return wrapRequest(() => this.store.get(query)).pipe(
       map((value) =>
         value !== undefined ? this.transformer.deserialize(value) : value
       )
     );
   }
+
   /**
    * Retrieves the values of the records matching the given key or key range in query (up to count if given).
    *
@@ -124,10 +133,11 @@ export class ReactiveIDBObjectStore<T = unknown> {
     query?: IDBValidKey | IDBKeyRange | null,
     count?: number
   ): Observable<T[]> {
-    return this.wrapRequest(() => this.store.getAll(query, count)).pipe(
+    return wrapRequest(() => this.store.getAll(query, count)).pipe(
       map((values) => values.map((v) => this.transformer.deserialize(v)))
     );
   }
+
   /**
    * Retrieves the keys of records matching the given key or key range in query (up to count if given).
    *
@@ -137,7 +147,7 @@ export class ReactiveIDBObjectStore<T = unknown> {
     query?: IDBValidKey | IDBKeyRange | null,
     count?: number
   ): Observable<IDBValidKey[]> {
-    return this.wrapRequest(() => this.store.getAllKeys(query, count));
+    return wrapRequest(() => this.store.getAllKeys(query, count));
   }
   /**
    * Retrieves the key of the first record matching the given key or key range in query.
@@ -147,13 +157,13 @@ export class ReactiveIDBObjectStore<T = unknown> {
   getKey$(
     query: IDBValidKey | IDBKeyRange
   ): Observable<IDBValidKey | undefined> {
-    return this.wrapRequest(() => this.store.getKey(query));
+    return wrapRequest(() => this.store.getKey(query));
   }
 
-  // TODO ReactiveIDBIndex
-  index(name: string): IDBIndex {
-    return this.store.index(name);
+  index(name: string): ReactiveIDBIndex<T> {
+    return new ReactiveIDBIndex<T>(this.store.index(name), this);
   }
+
   /**
    * Opens a cursor over the records matching query, ordered by direction. If query is null, all records in store are matched.
    *
@@ -163,8 +173,9 @@ export class ReactiveIDBObjectStore<T = unknown> {
     query?: IDBValidKey | IDBKeyRange | null,
     direction?: IDBCursorDirection
   ): Observable<IDBCursorWithValue | null> {
-    return this.wrapRequest(() => this.store.openCursor(query, direction));
+    return wrapRequest(() => this.store.openCursor(query, direction), false);
   }
+
   /**
    * Opens a cursor with key only flag set over the records matching query, ordered by direction. If query is null, all records in store are matched.
    *
@@ -174,8 +185,9 @@ export class ReactiveIDBObjectStore<T = unknown> {
     query?: IDBValidKey | IDBKeyRange | null,
     direction?: IDBCursorDirection
   ): Observable<IDBCursor | null> {
-    return this.wrapRequest(() => this.store.openKeyCursor(query, direction));
+    return wrapRequest(() => this.store.openKeyCursor(query, direction), false);
   }
+
   /**
    * Adds or updates a record in store with the given value and key.
    *
@@ -186,21 +198,8 @@ export class ReactiveIDBObjectStore<T = unknown> {
    * If successful, request's result will be the record's key.
    */
   put$(value: T, key?: IDBValidKey): Observable<IDBValidKey> {
-    return this.wrapRequest(() =>
+    return wrapRequest(() =>
       this.store.put(this.transformer.serialize(value), key)
     );
-  }
-
-  private wrapRequest<Result>(
-    request: () => IDBRequest<Result>
-  ): Observable<Result> {
-    return new Observable((observer) => {
-      const req = request();
-      req.onsuccess = () => {
-        observer.next(req.result);
-        observer.complete();
-      };
-      req.onerror = (ev) => observer.error((ev.target as IDBRequest).error);
-    });
   }
 }
