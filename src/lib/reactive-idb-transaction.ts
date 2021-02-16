@@ -1,10 +1,10 @@
 import { defer, Observable, of } from 'rxjs';
 
-import { ReactiveIDBDatabase } from './reactive-idb-database';
 import {
-  ReactiveIDBObjectStore,
-  Transformer,
-} from './reactive-idb-object-store';
+  ReactiveIDBDatabase,
+  ReactiveIDBTransformer,
+} from './reactive-idb-database';
+import { ReactiveIDBObjectStore } from './reactive-idb-object-store';
 
 export class ReactiveIDBTransaction {
   /**
@@ -51,7 +51,7 @@ export class ReactiveIDBTransaction {
    */
   objectStore<T = unknown>(
     name: string,
-    transformer: Transformer<T> = {
+    transformer: ReactiveIDBTransformer<T> = {
       serialize: (o) => o,
       deserialize: (v) => v as T,
     }
@@ -73,7 +73,7 @@ export class ReactiveIDBTransaction {
    */
   objectStore$<T>(
     name: string,
-    transformer: Transformer<T>
+    transformer: ReactiveIDBTransformer<T>
   ): Observable<ReactiveIDBObjectStore<T>>;
 
   /**
@@ -81,7 +81,7 @@ export class ReactiveIDBTransaction {
    */
   objectStore$<T>(
     name: string,
-    transformer?: Transformer<T>
+    transformer?: ReactiveIDBTransformer<T>
   ): Observable<ReactiveIDBObjectStore<T> | ReactiveIDBObjectStore> {
     return defer(() =>
       of(

@@ -2,6 +2,11 @@ import { Observable } from 'rxjs';
 
 import { ReactiveIDBTransaction } from './reactive-idb-transaction';
 
+export interface ReactiveIDBTransformer<T> {
+  serialize: (obj: T) => unknown;
+  deserialize: (value: unknown) => T;
+}
+
 export interface ReactiveIDBIndexSchema {
   name: string;
   keyPath?: string | string[];

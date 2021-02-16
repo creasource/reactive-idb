@@ -1,14 +1,10 @@
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { ReactiveIDBTransformer } from './reactive-idb-database';
 import { ReactiveIDBIndex } from './reactive-idb-index';
 import { ReactiveIDBTransaction } from './reactive-idb-transaction';
 import { wrapRequest } from './utils/wrap-request.util';
-
-export interface Transformer<T> {
-  serialize: (obj: T) => unknown;
-  deserialize: (value: unknown) => T;
-}
 
 export class ReactiveIDBObjectStore<T = unknown> {
   /**
@@ -45,7 +41,7 @@ export class ReactiveIDBObjectStore<T = unknown> {
   constructor(
     private readonly store: IDBObjectStore,
     readonly transaction: ReactiveIDBTransaction,
-    readonly transformer: Transformer<T> = {
+    readonly transformer: ReactiveIDBTransformer<T> = {
       serialize: (o) => o,
       deserialize: (v) => v as T,
     }
