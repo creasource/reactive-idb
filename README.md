@@ -16,14 +16,12 @@ WORK IN PROGRESS
   
   - **[1. Databases](#1-databases)**
     
-    - [Database creation](#database-creation)
-      - [Get a reactive database from an existing IDBDatabase](#get-a-reactive-database-from-an-existing-idbdatabase)
-      - [Create an empty database from scratch](#create-an-empty-database-from-scratch)
-      - [Define a schema for stores and indexes](#define-a-schema-for-stores-and-indexes)
-      - [Upgrade a database](#upgrade-a-database)
-      - [Use a custom `onUpgrade` function](#use-a-custom-onupgrade-function)
-      - [Other creation options](#other-creation-options)
-    - [Database deletion](#database-deletion)
+    - [Get a reactive database from an existing IDBDatabase](#get-a-reactive-database-from-an-existing-idbdatabase)
+    - [Create an empty database from scratch](#create-an-empty-database-from-scratch)
+    - [Define a schema for stores and indexes](#define-a-schema-for-stores-and-indexes)
+    - [Upgrade a database](#upgrade-a-database)
+    - [Use a custom `onUpgrade` function](#use-a-custom-onupgrade-function)
+    - [Delete a database](#delete-a-database)
     
   - **[2. Transactions](#2-transactions)**
     
@@ -56,12 +54,7 @@ yarn add @creasource/reactive-idb rxjs
 
 ## 1. Databases
 
-### Database creation
-
-You can create a `ReactiveIDBDatabase` either form an existing `IDBDatabase` or from scratch
-by using the static `create` method.
-
-#### Get a reactive database from an existing IDBDatabase
+### Get a reactive database from an existing IDBDatabase
 
 ```typescript
 import { ReactiveIDBDatabase } from '@creasource/reactive-idb';
@@ -73,7 +66,7 @@ let db: IDBDatabase;
 const reactiveDb = new ReactiveIDBDatabase(db)
 ```
 
-#### Create an empty database from scratch
+### Create an empty database from scratch
 
 ```typescript
 import { ReactiveIDBDatabase } from '@creasource/reactive-idb';
@@ -84,29 +77,173 @@ const db$ = ReactiveIDBDatabase.create({ name: 'myDatabase' })
 db$.subscribe();
 ```
 
-#### Define a schema for stores and indexes
+### Define a schema for stores and indexes
 
-#### Upgrade a database
+```typescript
+import { ReactiveIDBDatabase } from '@creasource/reactive-idb';
 
-#### Use a custom onUpgrade function
+// Creates a database with two stores
+ReactiveIDBDatabase.create({ 
+  name: 'myDatabase',
+  schema: [{ version: 1, stores: ['myStore1', 'myStore2'] }]
+}).subscribe();
 
-#### Other creation options
+// Complete example, creates a store with options and indexes
+ReactiveIDBDatabase.create({
+  name: 'myOtherDatabase',
+  schema: [
+    {
+      version: 1,
+      stores: [
+        {
+          // Creates a store named myStore
+          name: 'myStore',
+          // Pass IDBObjectStoreParameters
+          options: { autoIncrement: true },
+          indexes: [
+            // Creates an index named "myIndex" with a keyPath of "myIndex"
+            'myIndex',
+            {
+              // Specify the name and keyPath of this index explicitly
+              name: 'index',
+              keyPath: 'path',
+              // Pass IDBIndexParameters
+              options: { unique: true },
+            },
+          ],
+        },
+      ],
+    },
+  ],
+}).subscribe();
+```
 
-### Database deletion
+### Upgrade a database
+
+```typescript
+import { ReactiveIDBDatabase } from '@creasource/reactive-idb';
+
+// If current db version is 0 this will create 4 stores.
+// If current db version is 1 this will create 2 additional stores.
+// Final database version will be 2.
+ReactiveIDBDatabase.create({ 
+  name: 'myDatabase',
+  schema: [
+    { version: 1, stores: ['myStore1', 'myStore2'] },
+    { version: 2, stores: ['myStore2', 'myStore3'] }
+  ],
+}).subscribe();
+```
+
+### Use a custom onUpgrade function
+
+```typescript
+import { ReactiveIDBDatabase } from '@creasource/reactive-idb';
+
+// You can pass an onUpgrade function for more control over the upgrade process
+ReactiveIDBDatabase.create({ 
+  name: 'myDatabase',
+  schema: [
+    { version: 1, stores: ['myStore1', 'myStore2'] },
+    { version: 2, stores: ['myStore2', 'myStore3'] }
+  ],
+  onUpgrade: (
+    database: IDBDatabase,
+    oldVersion: number,
+    newVersion: number | null,
+    transaction: IDBTransaction
+  ) => {
+    if (oldVersion < 2) {
+      transaction.objectStore('myStore1').createIndex('index', 'keyPath');
+    }
+  }
+}).subscribe();
+```
+
+### Delete a database
+
+```typescript
+import { ReactiveIDBDatabase } from '@creasource/reactive-idb';
+import { concatMap, shareReplay } from 'rxjs/operators';
+
+// Create a database
+const db$ = ReactiveIDBDatabase.create({ name: 'myDatabase' }).pipe(shareReplay(1));
+
+// Do something with it
+db$.subscribe(db => console.log(db));
+
+// Later... delete the database
+db$.pipe(concatMap(db => db.clear$())).subscribe();
+```
 
 ## 2. Transactions
 
 ### Obtain a transaction
 
+```typescript
+import { ReactiveIDBDatabase } from '@creasource/reactive-idb';
+import { concatMap } from 'rxjs/operators';
+
+const db$ = ReactiveIDBDatabase.create({
+  name: 'myDatabase',
+  schema: [{ version: 1, stores: ['myStore1', 'myStore2'] }],
+});
+
+// Use the observable API to get a transaction by calling `transaction$` on the database
+db$.pipe(
+  // Get a transaction with our two stores in scope in readwrite mode
+  concatMap(db => db.transaction$(['myStore1', 'myStore2'], 'readwrite')),
+  concatMap(transaction => merge(
+    // Do some operations
+    transaction.objectStore('myStore1').add$('value1', 'key1'),
+    transaction.objectStore('myStore2').add$('value2', 'key2'),
+  ))
+).subscribe({
+  next: (key) => console.log(key), // Logs "key1" and "key2"
+  error: (err) => console.error(err),
+  complete: () => console.log('Transaction was successful')
+});
+```
+
 ### Transactions lifecycle
+
+You must be careful to schedule the transaction operations in a synchronous scheduler.
+
+```typescript
+import { ReactiveIDBDatabase } from '@creasource/reactive-idb';
+import { asyncScheduler } from 'rxjs';
+import { concatMap } from 'rxjs/operators';
+
+const db$ = ReactiveIDBDatabase.create({
+  name: 'myDatabase',
+  schema: [{ version: 1, stores: ['myStore1'] }],
+});
+
+// Following code will log an error.
+db$.pipe(
+  concatMap(db => db.transaction$('myStore1')),
+  // Schedule following operations asynchronously (don't do this)
+  delay(0, asyncScheduler), // Note: using the asapScheduler would have been fine
+  concatMap(transaction => transaction.objectStore('myStore1').add$('value1', 'key1'))
+).
+subscribe({
+  error: (err) => console.error(err), // Logs an InvalidStateError (transaction has finished)
+});
+```
 
 ## 3. Object stores and indexes
 
 ### Base object stores
 
+TODO
+
 ### Typed object stores
 
+TODO
+
 ### Working with cursors
+
+TODO
 
 ---
 
@@ -114,7 +251,7 @@ db$.subscribe();
 
 They are many ways you can contribute to **reactive-idb** !
 
-* Give the project a star
+* Star the project
 * Report a bug
 * Open a pull request
 * Start a discussion to share your ideas
