@@ -8533,6 +8533,11 @@ typedoc-default-themes@^0.12.7:
   resolved "https://registry.yarnpkg.com/typedoc-default-themes/-/typedoc-default-themes-0.12.7.tgz#d44f68d40a3e90a19b5ea7be4cc6ed949afe768d"
   integrity sha512-0XAuGEqID+gon1+fhi4LycOEFM+5Mvm2PjwaiVZNAzU7pn3G2DEpsoXnFOPlLDnHY6ZW0BY0nO7ur9fHOFkBLQ==
 
+typedoc-plugin-ghpages-cname@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/typedoc-plugin-ghpages-cname/-/typedoc-plugin-ghpages-cname-1.0.1.tgz#125d1cfa4cdf585bc61d16f734fd9e4c44741202"
+  integrity sha512-YJI+GX7VpFg8taBbJKOBivDSg62JHrcPr+Y3zdUIpp5Q6QCj08JgTUGnVWuqczBRT3+D1/JfrNin5P0rfwyiYA==
+
 typedoc@^0.20.22:
   version "0.20.25"
   resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.20.25.tgz#f84b0b00dff545e945b63e2d5fff670fc9e86878"
