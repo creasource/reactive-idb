@@ -50,7 +50,7 @@
   "engines": {
     "node": ">=10"
   },
-  "peerDependencies": {
+  "dependencies": {
     "rxjs": "^6.6.3"
   },
   "devDependencies": {
