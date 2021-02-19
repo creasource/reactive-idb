@@ -1,5 +1,14 @@
+/**
+ * @module
+ * @ignore
+ */
 import { Observable } from 'rxjs';
 
+/**
+ * @ignore
+ * @param request
+ * @param complete
+ */
 export const wrapRequest = <Result>(
   request: () => IDBRequest<Result>,
   complete = true
