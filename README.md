@@ -4,8 +4,6 @@ A reactive wrapper to IndexedDB using Rxjs, written in TypeScript.
 
 [![<ORG_NAME>](https://circleci.com/gh/CreaSource/reactive-idb.svg?style=shield)](https://circleci.com/gh/CreaSource/reactive-idb)
 
-WORK IN PROGRESS
-
 ---
 
 # Table of Contents

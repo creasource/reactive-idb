@@ -1,0 +1,14 @@
+.circleci
+.github
+.idea
+.nyc_output
+coverage
+cypress
+.babelrc
+.editorconfig
+.eslintrc.json
+.gitignore
+.prettierignore
+cypress.json
+typedoc.json
+yarn.lock
