@@ -5,9 +5,14 @@
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
-  "repository": "https://github.com/tgambet/reactive-idb",
+  "repository": "https://github.com/creasource/reactive-idb",
   "license": "MIT",
-  "keywords": [],
+  "keywords": [
+    "reactive",
+    "indexeddb",
+    "indexeddb-wrapper",
+    "rxjs"
+  ],
   "scripts": {
     "build": "run-p build:*",
     "build:main": "tsc -p tsconfig.json",
@@ -19,7 +24,7 @@
     "test:lint": "eslint src --ext .ts",
     "test:prettier": "prettier \"src/**/*.ts\" --list-different",
     "test:spelling": "cspell \"{README.md,.github/*.md,src/**/*.ts}\"",
-    "test:unit": "nyc instrument --compact=false build instrumented",
+    "test:unit": "nyc --silent ava",
     "cypress:open": "cypress open",
     "cypress:verify": "cypress verify",
     "cypress:run": "cypress run",

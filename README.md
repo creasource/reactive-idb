@@ -1,6 +1,6 @@
 # reactive-idb
 
-A reactive wrapper to IndexedDB using Rxjs.
+A reactive wrapper to IndexedDB using Rxjs, written in TypeScript.
 
 [![<ORG_NAME>](https://circleci.com/gh/CreaSource/reactive-idb.svg?style=shield)](https://circleci.com/gh/CreaSource/reactive-idb)
 
@@ -135,7 +135,7 @@ ReactiveIDBDatabase.create({
 }).subscribe();
 ```
 
-### Use a custom onUpgrade function
+### Use a custom `onUpgrade` function
 
 ```typescript
 import { ReactiveIDBDatabase } from '@creasource/reactive-idb';
@@ -223,10 +223,9 @@ const db$ = ReactiveIDBDatabase.create({
 db$.pipe(
   concatMap(db => db.transaction$('myStore1')),
   // Schedule following operations asynchronously (don't do this)
-  delay(0, asyncScheduler), // Note: using the asapScheduler would have been fine
+  delay(0, asyncScheduler),
   concatMap(transaction => transaction.objectStore('myStore1').add$('value1', 'key1'))
-).
-subscribe({
+).subscribe({
   error: (err) => console.error(err), // Logs an InvalidStateError (transaction has finished)
 });
 ```
@@ -235,15 +234,81 @@ subscribe({
 
 ### Base object stores
 
-TODO
+```typescript
+import { ReactiveIDBDatabase } from '@creasource/reactive-idb';
+import { concatMap } from 'rxjs/operators';
+
+const db$ = ReactiveIDBDatabase.create({
+  name: 'myDatabase',
+  schema: [{ version: 1, stores: ['myStore1'] }],
+});
+
+db$.pipe(
+  concatMap(db => db.transaction$('myStore1', 'readwrite')),
+  concatMap(transaction => transaction.objectStore('myStore1')),
+  concatMap(objectStore => merge(
+    objectStore.add$('value', 'key1'),
+    objectStore.put$('value', 'key2'),
+    objectStore.delete$('key3'),
+    objectStore.count$(),
+  ))
+).subscribe({
+  next: (value) => console.log(value),
+});
+```
 
 ### Typed object stores
 
-TODO
+```typescript
+import { ReactiveIDBDatabase } from '@creasource/reactive-idb';
+import { concatMap } from 'rxjs/operators';
+
+interface User {
+  id: number;
+  name: string
+}
+
+const db$ = ReactiveIDBDatabase.create({
+  name: 'myDatabase',
+  schema: [{ version: 1, stores: ['users'] }],
+});
+
+db$.pipe(
+  concatMap(db => db.transaction$('users', 'readwrite')),
+  concatMap(transaction => transaction.objectStore<User>('users')),
+  concatMap(objectStore => 
+    // You can only add Users to this store
+    objectStore.add$({ id: 1, name: 'John Doe' }, 'key1').pipe(
+      concatMap(key => objectStore.get$(key)),
+      map(user => user.name) // 'user' is typed as User
+    )
+  ),
+).subscribe({
+  next: (value) => console.log(value), // Logs "John Doe"
+});
+```
 
 ### Working with cursors
 
-TODO
+```typescript
+import { ReactiveIDBDatabase } from './reactive-idb-database';
+
+let db$: ReactiveIDBDatabase;
+
+db$.pipe(
+  concatMap(db => db.transaction$('myStore1', 'readwrite')),
+  concatMap(transaction => transaction.objectStore('myStore1')),
+  concatMap(objectStore =>
+    objectStore.openCursor$().pipe(
+      takeWhile(cursor => !!cursor),
+      tap(cursor => cursor.continue()),
+      map(cursor => cursor.value),
+    )
+  )
+).subscribe({
+  next: (value) => console.log(value), // Logs all objects in store
+});
+```
 
 ---
 

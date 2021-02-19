@@ -1,3 +1,7 @@
+/**
+ * @module
+ * @ignore
+ */
 import { Observable } from 'rxjs';
 
 /**
