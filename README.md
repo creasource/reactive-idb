@@ -2,8 +2,8 @@
 
 A reactive wrapper to IndexedDB using Rxjs, written in TypeScript.
 
-[![<ORG_NAME>](https://circleci.com/gh/CreaSource/reactive-idb.svg?style=shield)](https://circleci.com/gh/CreaSource/reactive-idb)
-
+[![npm version](https://badge.fury.io/js/%40creasource%2Freactive-idb.svg)](https://badge.fury.io/js/%40creasource%2Freactive-idb)
+[![creasource](https://circleci.com/gh/CreaSource/reactive-idb.svg?style=shield)](https://circleci.com/gh/CreaSource/reactive-idb)
 ---
 
 # Table of Contents
@@ -167,7 +167,9 @@ import { ReactiveIDBDatabase } from '@creasource/reactive-idb';
 import { concatMap, shareReplay } from 'rxjs/operators';
 
 // Create a database
-const db$ = ReactiveIDBDatabase.create({ name: 'myDatabase' }).pipe(shareReplay(1));
+const db$ = ReactiveIDBDatabase.create({ name: 'myDatabase' }).pipe(
+  shareReplay(1)
+);
 
 // Do something with it
 db$.subscribe(db => console.log(db));
@@ -245,7 +247,7 @@ const db$ = ReactiveIDBDatabase.create({
 
 db$.pipe(
   concatMap(db => db.transaction$('myStore1', 'readwrite')),
-  concatMap(transaction => transaction.objectStore('myStore1')),
+  map(transaction => transaction.objectStore('myStore1')),
   concatMap(objectStore => merge(
     objectStore.add$('value', 'key1'),
     objectStore.put$('value', 'key2'),
@@ -275,7 +277,7 @@ const db$ = ReactiveIDBDatabase.create({
 
 db$.pipe(
   concatMap(db => db.transaction$('users', 'readwrite')),
-  concatMap(transaction => transaction.objectStore<User>('users')),
+  map(transaction => transaction.objectStore<User>('users')),
   concatMap(objectStore => 
     // You can only add Users to this store
     objectStore.add$({ id: 1, name: 'John Doe' }, 'key1').pipe(
@@ -297,9 +299,8 @@ let db$: ReactiveIDBDatabase;
 
 db$.pipe(
   concatMap(db => db.transaction$('myStore1', 'readwrite')),
-  concatMap(transaction => transaction.objectStore('myStore1')),
-  concatMap(objectStore =>
-    objectStore.openCursor$().pipe(
+  concatMap(transaction =>
+    transaction.objectStore('myStore1').openCursor$().pipe(
       takeWhile(cursor => !!cursor),
       tap(cursor => cursor.continue()),
       map(cursor => cursor.value),

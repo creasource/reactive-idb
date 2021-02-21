@@ -7,3 +7,4 @@ workflows:
       - cypress/run:
           yarn: true
           executor: cypress/base-14
+          record: true
