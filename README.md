@@ -43,9 +43,9 @@ A reactive wrapper to IndexedDB using Rxjs, written in TypeScript.
 **reactive-idb** is available both on the npm and the github registry.
 
 ```shell
-npm install @creasource/reactive-idb
+$ npm install @creasource/reactive-idb
 # Or
-yarn add @creasource/reactive-idb
+$ yarn add @creasource/reactive-idb
 ```
 
 ---
@@ -130,7 +130,7 @@ ReactiveIDBDatabase.create({
   name: 'myDatabase',
   schema: [
     { version: 1, stores: ['myStore1', 'myStore2'] },
-    { version: 2, stores: ['myStore2', 'myStore3'] }
+    { version: 2, stores: ['myStore3', 'myStore4'] }
   ],
 }).subscribe();
 ```
@@ -145,7 +145,7 @@ ReactiveIDBDatabase.create({
   name: 'myDatabase',
   schema: [
     { version: 1, stores: ['myStore1', 'myStore2'] },
-    { version: 2, stores: ['myStore2', 'myStore3'] }
+    { version: 2, stores: ['myStore3', 'myStore4'] }
   ],
   onUpgrade: (
     database: IDBDatabase,
