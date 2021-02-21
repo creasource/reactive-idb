@@ -40,10 +40,12 @@ A reactive wrapper to IndexedDB using Rxjs, written in TypeScript.
 
 # Installation
 
+**reactive-idb** is available both on the npm and the github registry.
+
 ```shell
-npm install @creasource/reactive-idb rxjs
+npm install @creasource/reactive-idb
 # Or
-yarn add @creasource/reactive-idb rxjs
+yarn add @creasource/reactive-idb
 ```
 
 ---

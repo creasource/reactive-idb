@@ -66,30 +66,14 @@ export class ReactiveIDBTransaction {
   /**
    * Returns a ReactiveIDBObjectStore in the transaction's scope.
    */
-  objectStore$(name: string): Observable<ReactiveIDBObjectStore>;
-
-  /**
-   * Returns a ReactiveIDBObjectStore in the transaction's scope.
-   */
-  objectStore$<T>(
+  objectStore$<T = unknown>(
     name: string,
-    transformer: ReactiveIDBTransformer<T>
-  ): Observable<ReactiveIDBObjectStore<T>>;
-
-  /**
-   * Returns a ReactiveIDBObjectStore in the transaction's scope.
-   */
-  objectStore$<T>(
-    name: string,
-    transformer?: ReactiveIDBTransformer<T>
-  ): Observable<ReactiveIDBObjectStore<T> | ReactiveIDBObjectStore> {
-    return defer(() =>
-      of(
-        transformer
-          ? this.objectStore<T>(name, transformer)
-          : this.objectStore(name)
-      )
-    );
+    transformer: ReactiveIDBTransformer<T> = {
+      serialize: (o) => o,
+      deserialize: (v) => v as T,
+    }
+  ): Observable<ReactiveIDBObjectStore<T>> {
+    return defer(() => of(this.objectStore<T>(name, transformer)));
   }
 
   addEventListener<K extends keyof IDBTransactionEventMap>(
