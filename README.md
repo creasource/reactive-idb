@@ -2,8 +2,14 @@
 
 A reactive wrapper to IndexedDB using Rxjs, written in TypeScript.
 
-[![<ORG_NAME>](https://circleci.com/gh/CreaSource/reactive-idb.svg?style=shield)](https://circleci.com/gh/CreaSource/reactive-idb)
+[![license](https://badgen.net/github/license/creasource/reactive-idb)](https://github.com/CreaSource/reactive-idb/blob/main/LICENSE)
+[![npm version](https://badgen.net/npm/v/@creasource/reactive-idb)](https://www.npmjs.com/package/@creasource/reactive-idb)
+[![types](https://badgen.net/npm/types/@creasource/reactive-idb)](https://www.npmjs.com/package/@creasource/reactive-idb)
+[![size](https://badgen.net/bundlephobia/minzip/@creasource/reactive-idb)](https://bundlephobia.com/result?p=@creasource/reactive-idb)
+[![tree-shaking](https://badgen.net/bundlephobia/tree-shaking/@creasource/reactive-idb)](https://bundlephobia.com/result?p=@creasource/reactive-idb)
 
+[![circleci](https://circleci.com/gh/CreaSource/reactive-idb.svg?style=shield)](https://circleci.com/gh/CreaSource/reactive-idb)
+[![cypress](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/detailed/93mszd&style=flat&logo=cypress)](https://dashboard.cypress.io/projects/93mszd/runs)
 ---
 
 # Table of Contents
@@ -167,7 +173,9 @@ import { ReactiveIDBDatabase } from '@creasource/reactive-idb';
 import { concatMap, shareReplay } from 'rxjs/operators';
 
 // Create a database
-const db$ = ReactiveIDBDatabase.create({ name: 'myDatabase' }).pipe(shareReplay(1));
+const db$ = ReactiveIDBDatabase.create({ name: 'myDatabase' }).pipe(
+  shareReplay(1)
+);
 
 // Do something with it
 db$.subscribe(db => console.log(db));
@@ -245,7 +253,7 @@ const db$ = ReactiveIDBDatabase.create({
 
 db$.pipe(
   concatMap(db => db.transaction$('myStore1', 'readwrite')),
-  concatMap(transaction => transaction.objectStore('myStore1')),
+  map(transaction => transaction.objectStore('myStore1')),
   concatMap(objectStore => merge(
     objectStore.add$('value', 'key1'),
     objectStore.put$('value', 'key2'),
@@ -275,7 +283,7 @@ const db$ = ReactiveIDBDatabase.create({
 
 db$.pipe(
   concatMap(db => db.transaction$('users', 'readwrite')),
-  concatMap(transaction => transaction.objectStore<User>('users')),
+  map(transaction => transaction.objectStore<User>('users')),
   concatMap(objectStore => 
     // You can only add Users to this store
     objectStore.add$({ id: 1, name: 'John Doe' }, 'key1').pipe(
@@ -297,9 +305,8 @@ let db$: ReactiveIDBDatabase;
 
 db$.pipe(
   concatMap(db => db.transaction$('myStore1', 'readwrite')),
-  concatMap(transaction => transaction.objectStore('myStore1')),
-  concatMap(objectStore =>
-    objectStore.openCursor$().pipe(
+  concatMap(transaction =>
+    transaction.objectStore('myStore1').openCursor$().pipe(
       takeWhile(cursor => !!cursor),
       tap(cursor => cursor.continue()),
       map(cursor => cursor.value),
