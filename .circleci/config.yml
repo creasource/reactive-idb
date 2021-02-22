@@ -6,11 +6,11 @@ workflows:
     jobs:
       - cypress/install:
           yarn: true
+          executor: cypress/browsers-chrome78-ff70
       - cypress/run:
           name: Chrome
           requires:
             - cypress/install
-          executor: cypress/browsers-chrome78-ff70
           record: true
           parallel: true
           parallelism: 2
@@ -19,7 +19,6 @@ workflows:
           name: Firefox
           requires:
             - cypress/install
-          executor: cypress/browsers-chrome78-ff70
           record: true
           parallel: true
           parallelism: 2
