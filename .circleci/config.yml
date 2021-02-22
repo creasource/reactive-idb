@@ -9,6 +9,7 @@ workflows:
           executor: cypress/browsers-chrome78-ff70
       - cypress/run:
           name: Chrome
+          executor: cypress/browsers-chrome78-ff70
           requires:
             - cypress/install
           record: true
@@ -17,6 +18,7 @@ workflows:
           browser: chrome
       - cypress/run:
           name: Firefox
+          executor: cypress/browsers-chrome78-ff70
           requires:
             - cypress/install
           record: true
