@@ -2,8 +2,14 @@
 
 A reactive wrapper to IndexedDB using Rxjs, written in TypeScript.
 
-[![npm version](https://badge.fury.io/js/%40creasource%2Freactive-idb.svg)](https://badge.fury.io/js/%40creasource%2Freactive-idb)
-[![creasource](https://circleci.com/gh/CreaSource/reactive-idb.svg?style=shield)](https://circleci.com/gh/CreaSource/reactive-idb)
+![license](https://badgen.net/github/license/creasource/reactive-idb)
+![npm version](https://badgen.net/npm/v/@creasource/reactive-idb)
+![size](https://badgen.net/bundlephobia/minzip/@creasource/reactive-idb)
+![types](https://badgen.net/npm/types/@creasource/reactive-idb)
+![tree-shaking](https://badgen.net/bundlephobia/tree-shaking/@creasource/reactive-idb)
+
+[![circleci](https://circleci.com/gh/CreaSource/reactive-idb.svg?style=shield)](https://circleci.com/gh/CreaSource/reactive-idb)
+[![cypress](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/detailed/93mszd&style=flat&logo=cypress)](https://dashboard.cypress.io/projects/93mszd/runs)
 ---
 
 # Table of Contents
