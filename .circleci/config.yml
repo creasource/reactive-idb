@@ -16,6 +16,7 @@ workflows:
           parallel: true
           parallelism: 2
           browser: chrome
+          group: chrome
       - cypress/run:
           name: Firefox
           executor: cypress/browsers-chrome78-ff70
@@ -25,3 +26,4 @@ workflows:
           parallel: true
           parallelism: 2
           browser: firefox
+          group: firefox
