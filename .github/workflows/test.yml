@@ -64,4 +64,4 @@ jobs:
         uses: actions/checkout@v1
       - name: Cypress run
         uses: cypress-io/github-action@v2
-      - run: cypress info
+      - run: npx cypress info
