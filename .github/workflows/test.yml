@@ -30,7 +30,7 @@ jobs:
       - name: Build
         run: yarn build:main
 
-  build-modules:
+  build-module:
     name: Build module
     runs-on: ubuntu-latest
     steps:
