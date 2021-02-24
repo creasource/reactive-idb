@@ -53,8 +53,8 @@ jobs:
       - name: Build
         run: yarn build:module
 
-  test:
-    name: Test
+  test-chrome:
+    name: Test Cypress (chrome)
     needs:
       - build-main
       - build-module
@@ -64,4 +64,33 @@ jobs:
         uses: actions/checkout@v1
       - name: Cypress run
         uses: cypress-io/github-action@v2
-      - run: npx cypress info
+        with:
+          browser: chrome
+
+  test-firefox:
+    name: Test Cypress (firefox)
+    needs:
+      - build-main
+      - build-module
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          browser: firefox
+
+  test-edge:
+    name: Test Cypress (edge)
+    needs:
+      - build-main
+      - build-module
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          browser: edge
