@@ -1,6 +1,10 @@
 name: Prepare release
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   release-please:
@@ -16,9 +20,10 @@ jobs:
 
   test:
     needs: [release-please]
+    if: ${{ needs.release-please.outputs.release_created }}
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{needs.release-please.outputs.release_created}} ${{needs.release-please.outputs.tag_name}}
+      - run: echo ${{ needs.release-please.outputs.release_created }} ${{ needs.release-please.outputs.tag_name }}
 
 #  gh-pages:
 #    if: ${{ jobs.release-please.steps.release.outputs.release_created }}
@@ -52,4 +57,3 @@ jobs:
 #        tag: ${{ github.ref }}
 #        overwrite: true
 #        body: "This is my release text"
-
