@@ -10,7 +10,6 @@ jobs:
         id: release
         with:
           release-type: node
-          package-name: @creasource/reactive-idb
 
   test:
     needs: [release-please]
