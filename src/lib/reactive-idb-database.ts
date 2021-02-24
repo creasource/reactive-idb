@@ -1,5 +1,6 @@
 import { Observable } from 'rxjs';
 
+import { ReactiveIDBObjectStore } from './reactive-idb-object-store';
 import { ReactiveIDBTransaction } from './reactive-idb-transaction';
 
 export interface ReactiveIDBTransformer<T> {
@@ -225,23 +226,26 @@ export class ReactiveIDBDatabase {
    *
    * Throws a "InvalidStateError" DOMException if not called within an upgrade transaction.
    */
-  // createObjectStore(
-  //   name: string,
-  //   options?: IDBObjectStoreParameters
-  // ): ReactiveIDBObjectStore {
-  //   return new ReactiveIDBObjectStore(
-  //     this.database.createObjectStore(name, options)
-  //   );
-  // }
+  createObjectStore(
+    name: string,
+    options?: IDBObjectStoreParameters
+  ): ReactiveIDBObjectStore {
+    const objStore = this.database.createObjectStore(name, options);
+    const transaction = objStore.transaction;
+
+    return new ReactiveIDBObjectStore(
+      objStore, new ReactiveIDBTransaction(transaction, this)
+    );
+  }
 
   /**
    * Deletes the object store with the given name.
    *
    * Throws a "InvalidStateError" DOMException if not called within an upgrade transaction.
    */
-  // deleteObjectStore(name: string): void {
-  //   return this.database.deleteObjectStore(name);
-  // }
+  deleteObjectStore(name: string): void {
+    return this.database.deleteObjectStore(name);
+  }
 
   /**
    *

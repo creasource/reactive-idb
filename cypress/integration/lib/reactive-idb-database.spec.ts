@@ -76,6 +76,7 @@ describe('ReactiveIDBDatabase', () => {
           expect(oldV).to.equal(0);
           expect(newV).to.equal(2);
           trans.objectStore('testStore').createIndex('test', 'test');
+          new ReactiveIDBDatabase(db).createObjectStore('testStore2')
         }
       );
 

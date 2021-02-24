@@ -45,7 +45,8 @@ export class ReactiveIDBObjectStore<T = unknown> {
       serialize: (o) => o,
       deserialize: (v) => v as T,
     }
-  ) {}
+  ) {
+  }
 
   /**
    * Adds or updates a record in store with the given value and key.
