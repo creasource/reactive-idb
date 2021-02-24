@@ -1,0 +1,54 @@
+name: Prepare release
+
+on: workflow_dispatch
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: GoogleCloudPlatform/release-please-action@v2
+        id: release
+        with:
+          release-type: node
+          package-name: @creasource/reactive-idb
+
+  test:
+    needs: [release-please]
+    runs-on: ubuntu-latest
+    if: ${{ jobs.release-please.steps.release.outputs.release_created }}
+    steps:
+      - uses: actions/checkout@v2
+
+#  gh-pages:
+#    if: ${{ jobs.release-please.steps.release.outputs.release_created }}
+#    name: Deploy Github pages
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: actions/setup-node@v1
+#      - uses: bahmutov/npm-install@v1
+#      - name: Generate documentation
+#        run: yarn doc:html
+#      - name: Push to gh-pages
+#        uses: s0/git-publish-subdir-action@develop
+#        env:
+#          REPO: self
+#          BRANCH: gh-pages
+#          FOLDER: build/docs
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          SQUASH_HISTORY: true
+#
+#  upload:
+#    name: upload
+#    runs-on: ubuntu-latest
+#    steps:
+#    - name: Upload binaries to release
+#      uses: svenstaro/upload-release-action@v2
+#      with:
+#        repo_token: ${{ secrets.GITHUB_TOKEN }}
+#        file: target/release/mything
+#        asset_name: mything
+#        tag: ${{ github.ref }}
+#        overwrite: true
+#        body: "This is my release text"
+
