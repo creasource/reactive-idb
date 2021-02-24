@@ -234,7 +234,8 @@ export class ReactiveIDBDatabase {
     const transaction = objStore.transaction;
 
     return new ReactiveIDBObjectStore(
-      objStore, new ReactiveIDBTransaction(transaction, this)
+      objStore,
+      new ReactiveIDBTransaction(transaction, this)
     );
   }
 
