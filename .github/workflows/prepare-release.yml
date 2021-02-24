@@ -5,6 +5,9 @@ on: workflow_dispatch
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       - uses: GoogleCloudPlatform/release-please-action@v2
         id: release
@@ -16,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ jobs.release-please.steps.release.outputs.release_created }}
     steps:
-      - uses: actions/checkout@v2
+      - run: echo ${{needs.release-please.outputs.release_created}} ${{needs.release-please.outputs.tag_name}}
 
 #  gh-pages:
 #    if: ${{ jobs.release-please.steps.release.outputs.release_created }}
