@@ -4,10 +4,9 @@ A reactive wrapper to IndexedDB using Rxjs, written in TypeScript.
 
 [![license](https://badgen.net/github/license/creasource/reactive-idb)](https://github.com/CreaSource/reactive-idb/blob/main/LICENSE)
 [![npm version](https://badgen.net/npm/v/@creasource/reactive-idb)](https://www.npmjs.com/package/@creasource/reactive-idb)
-[![types](https://badgen.net/npm/types/@creasource/reactive-idb)](https://www.npmjs.com/package/@creasource/reactive-idb)
 [![size](https://badgen.net/bundlephobia/minzip/@creasource/reactive-idb)](https://bundlephobia.com/result?p=@creasource/reactive-idb)
 [![tree-shaking](https://badgen.net/bundlephobia/tree-shaking/@creasource/reactive-idb)](https://bundlephobia.com/result?p=@creasource/reactive-idb)
-[![circleci](https://circleci.com/gh/CreaSource/reactive-idb.svg?style=shield)](https://circleci.com/gh/CreaSource/reactive-idb)
+[![Build & Test](https://github.com/CreaSource/reactive-idb/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/CreaSource/reactive-idb/actions/workflows/test.yml)
 [![cypress](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/detailed/93mszd&style=flat&logo=cypress)](https://dashboard.cypress.io/projects/93mszd/runs)
 ---
 

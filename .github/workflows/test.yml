@@ -1,6 +1,15 @@
-name: Test workflow
+name: Build & Test
 
-on: workflow_dispatch
+on:
+  - workflow_dispatch
+  push:
+    branches:
+      - main
+#    paths-ignore:
+#      - 'docs/**'
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build-main:
@@ -9,21 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - name: Install Dependencies
-        run: yarn install --frozen-lockfile --production=true
+      - uses: bahmutov/npm-install@v1
+        env:
+          NODE_ENV: production
       - name: Build
         run: yarn build:main
 
@@ -33,64 +30,62 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - uses: actions/cache@v2
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - name: Install Dependencies
-        run: yarn install --frozen-lockfile --production=true
+      - uses: bahmutov/npm-install@v1
+        env:
+          NODE_ENV: production
       - name: Build
         run: yarn build:module
 
-  test-chrome:
-    name: Test Cypress (chrome)
+  test-lint:
+    name: Test ESLint
     needs:
       - build-main
       - build-module
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Cypress run
-        uses: cypress-io/github-action@v2
+      - uses: actions/checkout@v1
+      - uses: bahmutov/npm-install@v1
+      - name: Run ESLint
+        run: yarn test:lint
+
+  test-prettier:
+    name: Test Prettier
+    needs:
+      - build-main
+      - build-module
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: bahmutov/npm-install@v1
+      - name: Run Prettier
+        run: yarn test:prettier
+
+  test-chrome:
+    name: Test Cypress (chrome)
+    needs: [test-eslint, test-prettier]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: cypress-io/github-action@v2
         with:
           browser: chrome
 
   test-firefox:
     name: Test Cypress (firefox)
-    needs:
-      - build-main
-      - build-module
+    needs: [test-eslint, test-prettier]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Cypress run
-        uses: cypress-io/github-action@v2
+      - uses: actions/checkout@v1
+      - uses: cypress-io/github-action@v2
         with:
           browser: firefox
 
   test-edge:
     name: Test Cypress (edge)
-    needs:
-      - build-main
-      - build-module
+    needs: [test-eslint, test-prettier]
     runs-on: windows-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Cypress run
-        uses: cypress-io/github-action@v2
+      - uses: actions/checkout@v1
+      - uses: cypress-io/github-action@v2
         with:
           browser: edge
