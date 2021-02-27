@@ -1,0 +1,53 @@
+name: Publish Package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-npm:
+    name: Publish on NPM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+      - uses: bahmutov/npm-install@v1
+      - run: yarn build:main && yarn build:module
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+
+  publish-gpr:
+    name: Publish on Github
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://npm.pkg.github.com/
+      - uses: bahmutov/npm-install@v1
+      - run: yarn build:main && yarn build:module
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  gh-pages:
+    name: Deploy Github pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      - uses: bahmutov/npm-install@v1
+      - name: Generate documentation
+        run: yarn doc:html
+      - name: Push to gh-pages
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: gh-pages
+          FOLDER: build/docs
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SQUASH_HISTORY: true
