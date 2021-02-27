@@ -1,0 +1,455 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>@creasource/reactive-idb</title>
+	<meta name="description" content="Documentation for @creasource/reactive-idb">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+	<script async src="assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">@creasource/reactive-idb</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<h1>@creasource/reactive-idb</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#reactive-idb" id="reactive-idb" style="color: inherit; text-decoration: none;">
+					<h1>reactive-idb</h1>
+				</a>
+				<p>A reactive wrapper to IndexedDB using Rxjs, written in TypeScript.</p>
+				<p><a href="https://github.com/CreaSource/reactive-idb/blob/main/LICENSE"><img src="https://badgen.net/github/license/creasource/reactive-idb" alt="license"></a>
+					<a href="https://www.npmjs.com/package/@creasource/reactive-idb"><img src="https://badgen.net/npm/v/@creasource/reactive-idb" alt="npm version"></a>
+					<a href="https://bundlephobia.com/result?p=@creasource/reactive-idb"><img src="https://badgen.net/bundlephobia/minzip/@creasource/reactive-idb" alt="size"></a>
+					<a href="https://bundlephobia.com/result?p=@creasource/reactive-idb"><img src="https://badgen.net/bundlephobia/tree-shaking/@creasource/reactive-idb" alt="tree-shaking"></a>
+				<a href="https://github.com/CreaSource/reactive-idb/actions/workflows/build-test.yml"><img src="https://github.com/CreaSource/reactive-idb/actions/workflows/build-test.yml/badge.svg?branch=main" alt="Build &amp; Test"></a></p>
+				<hr>
+				<a href="#table-of-contents" id="table-of-contents" style="color: inherit; text-decoration: none;">
+					<h1>Table of Contents</h1>
+				</a>
+				<ul>
+					<li><p><strong><a href="#installation">Installation</a></strong></p>
+					</li>
+					<li><p><strong><a href="#usage">Usage</a></strong></p>
+						<ul>
+							<li><p><strong><a href="#1-databases">1. Databases</a></strong></p>
+								<ul>
+									<li><a href="#get-a-reactive-database-from-an-existing-idbdatabase">Get a reactive database from an existing IDBDatabase</a></li>
+									<li><a href="#create-an-empty-database-from-scratch">Create an empty database from scratch</a></li>
+									<li><a href="#define-a-schema-for-stores-and-indexes">Define a schema for stores and indexes</a></li>
+									<li><a href="#upgrade-a-database">Upgrade a database</a></li>
+									<li><a href="#use-a-custom-onupgrade-function">Use a custom <code>onUpgrade</code> function</a></li>
+									<li><a href="#delete-a-database">Delete a database</a></li>
+								</ul>
+							</li>
+							<li><p><strong><a href="#2-transactions">2. Transactions</a></strong></p>
+								<ul>
+									<li><a href="#obtain-a-transaction">Obtain a transaction</a></li>
+									<li><a href="#transactions-lifecycle">Transactions lifecycle</a></li>
+								</ul>
+							</li>
+							<li><p><strong><a href="#3-object-stores-and-indexes">3. Object stores and indexes</a></strong></p>
+								<ul>
+									<li><a href="#base-object-stores">Base object stores</a></li>
+									<li><a href="#typed-object-stores">Typed object stores</a></li>
+									<li><a href="#working-with-cursors">Working with cursors</a></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li><p><strong><a href="#contribute">Contribute</a></strong></p>
+					</li>
+					<li><p><strong><a href="#license">License</a></strong></p>
+					</li>
+				</ul>
+				<hr>
+				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+					<h1>Installation</h1>
+				</a>
+				<p><strong>reactive-idb</strong> is available both on the npm and the github registry.</p>
+				<pre><code class="language-shell"><span style="color: #000000">$ npm install @creasource/reactive-idb</span>
+<span style="color: #008000"># Or</span>
+<span style="color: #000000">$ yarn add @creasource/reactive-idb</span>
+</code></pre>
+				<hr>
+				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+					<h1>Usage</h1>
+				</a>
+				<a href="#1-databases" id="1-databases" style="color: inherit; text-decoration: none;">
+					<h2>1. Databases</h2>
+				</a>
+				<a href="#get-a-reactive-database-from-an-existing-idbdatabase" id="get-a-reactive-database-from-an-existing-idbdatabase" style="color: inherit; text-decoration: none;">
+					<h3>Get a reactive database from an existing IDBDatabase</h3>
+				</a>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@creasource/reactive-idb&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #008000">// Say you have an existing IDBDatabase</span>
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">db</span><span style="color: #000000">: </span><span style="color: #267F99">IDBDatabase</span><span style="color: #000000">;</span>
+
+<span style="color: #008000">// Simply use the ReactiveIDBDatabase constructor</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">reactiveDb</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">ReactiveIDBDatabase</span><span style="color: #000000">(</span><span style="color: #001080">db</span><span style="color: #000000">)</span>
+</code></pre>
+				<a href="#create-an-empty-database-from-scratch" id="create-an-empty-database-from-scratch" style="color: inherit; text-decoration: none;">
+					<h3>Create an empty database from scratch</h3>
+				</a>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@creasource/reactive-idb&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">db$</span><span style="color: #000000"> = </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;myDatabase&#039;</span><span style="color: #000000"> })</span>
+
+<span style="color: #008000">// Effectively creates an empty database named &quot;myDatabase&quot;</span>
+<span style="color: #001080">db$</span><span style="color: #000000">.</span><span style="color: #795E26">subscribe</span><span style="color: #000000">();</span>
+</code></pre>
+				<a href="#define-a-schema-for-stores-and-indexes" id="define-a-schema-for-stores-and-indexes" style="color: inherit; text-decoration: none;">
+					<h3>Define a schema for stores and indexes</h3>
+				</a>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@creasource/reactive-idb&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #008000">// Creates a database with two stores</span>
+<span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;myDatabase&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">schema:</span><span style="color: #000000"> [{ </span><span style="color: #001080">version:</span><span style="color: #000000"> </span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #001080">stores:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;myStore1&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;myStore2&#039;</span><span style="color: #000000">] }]</span>
+<span style="color: #000000">}).</span><span style="color: #795E26">subscribe</span><span style="color: #000000">();</span>
+
+<span style="color: #008000">// Complete example, creates a store with options and indexes</span>
+<span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;myOtherDatabase&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">schema:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">    {</span>
+<span style="color: #000000">      </span><span style="color: #001080">version:</span><span style="color: #000000"> </span><span style="color: #098658">1</span><span style="color: #000000">,</span>
+<span style="color: #000000">      </span><span style="color: #001080">stores:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">        {</span>
+<span style="color: #000000">          </span><span style="color: #008000">// Creates a store named myStore</span>
+<span style="color: #000000">          </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;myStore&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">          </span><span style="color: #008000">// Pass IDBObjectStoreParameters</span>
+<span style="color: #000000">          </span><span style="color: #001080">options:</span><span style="color: #000000"> { </span><span style="color: #001080">autoIncrement:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000"> },</span>
+<span style="color: #000000">          </span><span style="color: #001080">indexes:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">            </span><span style="color: #008000">// Creates an index named &quot;myIndex&quot; with a keyPath of &quot;myIndex&quot;</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&#039;myIndex&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            {</span>
+<span style="color: #000000">              </span><span style="color: #008000">// Specify the name and keyPath of this index explicitly</span>
+<span style="color: #000000">              </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;index&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">              </span><span style="color: #001080">keyPath:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;path&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">              </span><span style="color: #008000">// Pass IDBIndexParameters</span>
+<span style="color: #000000">              </span><span style="color: #001080">options:</span><span style="color: #000000"> { </span><span style="color: #001080">unique:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000"> },</span>
+<span style="color: #000000">            },</span>
+<span style="color: #000000">          ],</span>
+<span style="color: #000000">        },</span>
+<span style="color: #000000">      ],</span>
+<span style="color: #000000">    },</span>
+<span style="color: #000000">  ],</span>
+<span style="color: #000000">}).</span><span style="color: #795E26">subscribe</span><span style="color: #000000">();</span>
+</code></pre>
+				<a href="#upgrade-a-database" id="upgrade-a-database" style="color: inherit; text-decoration: none;">
+					<h3>Upgrade a database</h3>
+				</a>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@creasource/reactive-idb&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #008000">// If current db version is 0 this will create 4 stores.</span>
+<span style="color: #008000">// If current db version is 1 this will create 2 additional stores.</span>
+<span style="color: #008000">// Final database version will be 2.</span>
+<span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;myDatabase&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">schema:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">    { </span><span style="color: #001080">version:</span><span style="color: #000000"> </span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #001080">stores:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;myStore1&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;myStore2&#039;</span><span style="color: #000000">] },</span>
+<span style="color: #000000">    { </span><span style="color: #001080">version:</span><span style="color: #000000"> </span><span style="color: #098658">2</span><span style="color: #000000">, </span><span style="color: #001080">stores:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;myStore3&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;myStore4&#039;</span><span style="color: #000000">] }</span>
+<span style="color: #000000">  ],</span>
+<span style="color: #000000">}).</span><span style="color: #795E26">subscribe</span><span style="color: #000000">();</span>
+</code></pre>
+				<a href="#use-a-custom-onupgrade-function" id="use-a-custom-onupgrade-function" style="color: inherit; text-decoration: none;">
+					<h3>Use a custom <code>onUpgrade</code> function</h3>
+				</a>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@creasource/reactive-idb&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #008000">// You can pass an onUpgrade function for more control over the upgrade process</span>
+<span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;myDatabase&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">schema:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">    { </span><span style="color: #001080">version:</span><span style="color: #000000"> </span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #001080">stores:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;myStore1&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;myStore2&#039;</span><span style="color: #000000">] },</span>
+<span style="color: #000000">    { </span><span style="color: #001080">version:</span><span style="color: #000000"> </span><span style="color: #098658">2</span><span style="color: #000000">, </span><span style="color: #001080">stores:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;myStore3&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;myStore4&#039;</span><span style="color: #000000">] }</span>
+<span style="color: #000000">  ],</span>
+<span style="color: #000000">  </span><span style="color: #795E26">onUpgrade</span><span style="color: #001080">:</span><span style="color: #000000"> (</span>
+<span style="color: #000000">    </span><span style="color: #001080">database</span><span style="color: #000000">: </span><span style="color: #267F99">IDBDatabase</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">oldVersion</span><span style="color: #000000">: </span><span style="color: #267F99">number</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">newVersion</span><span style="color: #000000">: </span><span style="color: #267F99">number</span><span style="color: #000000"> | </span><span style="color: #267F99">null</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">transaction</span><span style="color: #000000">: </span><span style="color: #267F99">IDBTransaction</span>
+<span style="color: #000000">  ) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">oldVersion</span><span style="color: #000000"> &lt; </span><span style="color: #098658">2</span><span style="color: #000000">) {</span>
+<span style="color: #000000">      </span><span style="color: #001080">transaction</span><span style="color: #000000">.</span><span style="color: #795E26">objectStore</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;myStore1&#039;</span><span style="color: #000000">).</span><span style="color: #795E26">createIndex</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;index&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;keyPath&#039;</span><span style="color: #000000">);</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}).</span><span style="color: #795E26">subscribe</span><span style="color: #000000">();</span>
+</code></pre>
+				<a href="#delete-a-database" id="delete-a-database" style="color: inherit; text-decoration: none;">
+					<h3>Delete a database</h3>
+				</a>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@creasource/reactive-idb&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">concatMap</span><span style="color: #000000">, </span><span style="color: #001080">shareReplay</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;rxjs/operators&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #008000">// Create a database</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">db$</span><span style="color: #000000"> = </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;myDatabase&#039;</span><span style="color: #000000"> }).</span><span style="color: #795E26">pipe</span><span style="color: #000000">(</span>
+<span style="color: #000000">  </span><span style="color: #795E26">shareReplay</span><span style="color: #000000">(</span><span style="color: #098658">1</span><span style="color: #000000">)</span>
+<span style="color: #000000">);</span>
+
+<span style="color: #008000">// Do something with it</span>
+<span style="color: #001080">db$</span><span style="color: #000000">.</span><span style="color: #795E26">subscribe</span><span style="color: #000000">(</span><span style="color: #001080">db</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">db</span><span style="color: #000000">));</span>
+
+<span style="color: #008000">// Later... delete the database</span>
+<span style="color: #001080">db$</span><span style="color: #000000">.</span><span style="color: #795E26">pipe</span><span style="color: #000000">(</span><span style="color: #795E26">concatMap</span><span style="color: #000000">(</span><span style="color: #001080">db</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">clear$</span><span style="color: #000000">())).</span><span style="color: #795E26">subscribe</span><span style="color: #000000">();</span>
+</code></pre>
+				<a href="#2-transactions" id="2-transactions" style="color: inherit; text-decoration: none;">
+					<h2>2. Transactions</h2>
+				</a>
+				<a href="#obtain-a-transaction" id="obtain-a-transaction" style="color: inherit; text-decoration: none;">
+					<h3>Obtain a transaction</h3>
+				</a>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@creasource/reactive-idb&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">concatMap</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;rxjs/operators&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">db$</span><span style="color: #000000"> = </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;myDatabase&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">schema:</span><span style="color: #000000"> [{ </span><span style="color: #001080">version:</span><span style="color: #000000"> </span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #001080">stores:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;myStore1&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;myStore2&#039;</span><span style="color: #000000">] }],</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #008000">// Use the observable API to get a transaction by calling `transaction$` on the database</span>
+<span style="color: #001080">db$</span><span style="color: #000000">.</span><span style="color: #795E26">pipe</span><span style="color: #000000">(</span>
+<span style="color: #000000">  </span><span style="color: #008000">// Get a transaction with our two stores in scope in readwrite mode</span>
+<span style="color: #000000">  </span><span style="color: #795E26">concatMap</span><span style="color: #000000">(</span><span style="color: #001080">db</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">transaction$</span><span style="color: #000000">([</span><span style="color: #A31515">&#039;myStore1&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;myStore2&#039;</span><span style="color: #000000">], </span><span style="color: #A31515">&#039;readwrite&#039;</span><span style="color: #000000">)),</span>
+<span style="color: #000000">  </span><span style="color: #795E26">concatMap</span><span style="color: #000000">(</span><span style="color: #001080">transaction</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #795E26">merge</span><span style="color: #000000">(</span>
+<span style="color: #000000">    </span><span style="color: #008000">// Do some operations</span>
+<span style="color: #000000">    </span><span style="color: #001080">transaction</span><span style="color: #000000">.</span><span style="color: #795E26">objectStore</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;myStore1&#039;</span><span style="color: #000000">).</span><span style="color: #795E26">add$</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;value1&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;key1&#039;</span><span style="color: #000000">),</span>
+<span style="color: #000000">    </span><span style="color: #001080">transaction</span><span style="color: #000000">.</span><span style="color: #795E26">objectStore</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;myStore2&#039;</span><span style="color: #000000">).</span><span style="color: #795E26">add$</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;value2&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;key2&#039;</span><span style="color: #000000">),</span>
+<span style="color: #000000">  ))</span>
+<span style="color: #000000">).</span><span style="color: #795E26">subscribe</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #795E26">next</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">key</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">key</span><span style="color: #000000">), </span><span style="color: #008000">// Logs &quot;key1&quot; and &quot;key2&quot;</span>
+<span style="color: #000000">  </span><span style="color: #795E26">error</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">err</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">error</span><span style="color: #000000">(</span><span style="color: #001080">err</span><span style="color: #000000">),</span>
+<span style="color: #000000">  </span><span style="color: #795E26">complete</span><span style="color: #001080">:</span><span style="color: #000000"> () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;Transaction was successful&#039;</span><span style="color: #000000">)</span>
+<span style="color: #000000">});</span>
+</code></pre>
+				<a href="#transactions-lifecycle" id="transactions-lifecycle" style="color: inherit; text-decoration: none;">
+					<h3>Transactions lifecycle</h3>
+				</a>
+				<p>You must be careful to schedule the transaction operations in a synchronous scheduler.</p>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@creasource/reactive-idb&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">asyncScheduler</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;rxjs&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">concatMap</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;rxjs/operators&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">db$</span><span style="color: #000000"> = </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;myDatabase&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">schema:</span><span style="color: #000000"> [{ </span><span style="color: #001080">version:</span><span style="color: #000000"> </span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #001080">stores:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;myStore1&#039;</span><span style="color: #000000">] }],</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #008000">// Following code will log an error.</span>
+<span style="color: #001080">db$</span><span style="color: #000000">.</span><span style="color: #795E26">pipe</span><span style="color: #000000">(</span>
+<span style="color: #000000">  </span><span style="color: #795E26">concatMap</span><span style="color: #000000">(</span><span style="color: #001080">db</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">transaction$</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;myStore1&#039;</span><span style="color: #000000">)),</span>
+<span style="color: #000000">  </span><span style="color: #008000">// Schedule following operations asynchronously (don&#039;t do this)</span>
+<span style="color: #000000">  </span><span style="color: #795E26">delay</span><span style="color: #000000">(</span><span style="color: #098658">0</span><span style="color: #000000">, </span><span style="color: #001080">asyncScheduler</span><span style="color: #000000">),</span>
+<span style="color: #000000">  </span><span style="color: #795E26">concatMap</span><span style="color: #000000">(</span><span style="color: #001080">transaction</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">transaction</span><span style="color: #000000">.</span><span style="color: #795E26">objectStore</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;myStore1&#039;</span><span style="color: #000000">).</span><span style="color: #795E26">add$</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;value1&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;key1&#039;</span><span style="color: #000000">))</span>
+<span style="color: #000000">).</span><span style="color: #795E26">subscribe</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #795E26">error</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">err</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">error</span><span style="color: #000000">(</span><span style="color: #001080">err</span><span style="color: #000000">), </span><span style="color: #008000">// Logs an InvalidStateError (transaction has finished)</span>
+<span style="color: #000000">});</span>
+</code></pre>
+				<a href="#3-object-stores-and-indexes" id="3-object-stores-and-indexes" style="color: inherit; text-decoration: none;">
+					<h2>3. Object stores and indexes</h2>
+				</a>
+				<a href="#base-object-stores" id="base-object-stores" style="color: inherit; text-decoration: none;">
+					<h3>Base object stores</h3>
+				</a>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@creasource/reactive-idb&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">concatMap</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;rxjs/operators&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">db$</span><span style="color: #000000"> = </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;myDatabase&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">schema:</span><span style="color: #000000"> [{ </span><span style="color: #001080">version:</span><span style="color: #000000"> </span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #001080">stores:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;myStore1&#039;</span><span style="color: #000000">] }],</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #001080">db$</span><span style="color: #000000">.</span><span style="color: #795E26">pipe</span><span style="color: #000000">(</span>
+<span style="color: #000000">  </span><span style="color: #795E26">concatMap</span><span style="color: #000000">(</span><span style="color: #001080">db</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">transaction$</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;myStore1&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;readwrite&#039;</span><span style="color: #000000">)),</span>
+<span style="color: #000000">  </span><span style="color: #795E26">map</span><span style="color: #000000">(</span><span style="color: #001080">transaction</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">transaction</span><span style="color: #000000">.</span><span style="color: #795E26">objectStore</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;myStore1&#039;</span><span style="color: #000000">)),</span>
+<span style="color: #000000">  </span><span style="color: #795E26">concatMap</span><span style="color: #000000">(</span><span style="color: #001080">objectStore</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #795E26">merge</span><span style="color: #000000">(</span>
+<span style="color: #000000">    </span><span style="color: #001080">objectStore</span><span style="color: #000000">.</span><span style="color: #795E26">add$</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;value&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;key1&#039;</span><span style="color: #000000">),</span>
+<span style="color: #000000">    </span><span style="color: #001080">objectStore</span><span style="color: #000000">.</span><span style="color: #795E26">put$</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;value&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;key2&#039;</span><span style="color: #000000">),</span>
+<span style="color: #000000">    </span><span style="color: #001080">objectStore</span><span style="color: #000000">.</span><span style="color: #795E26">delete$</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;key3&#039;</span><span style="color: #000000">),</span>
+<span style="color: #000000">    </span><span style="color: #001080">objectStore</span><span style="color: #000000">.</span><span style="color: #795E26">count$</span><span style="color: #000000">(),</span>
+<span style="color: #000000">  ))</span>
+<span style="color: #000000">).</span><span style="color: #795E26">subscribe</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #795E26">next</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">value</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">value</span><span style="color: #000000">),</span>
+<span style="color: #000000">});</span>
+</code></pre>
+				<a href="#typed-object-stores" id="typed-object-stores" style="color: inherit; text-decoration: none;">
+					<h3>Typed object stores</h3>
+				</a>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@creasource/reactive-idb&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">concatMap</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;rxjs/operators&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">interface</span><span style="color: #000000"> </span><span style="color: #267F99">User</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">id</span><span style="color: #000000">: </span><span style="color: #267F99">number</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #001080">name</span><span style="color: #000000">: </span><span style="color: #267F99">string</span>
+<span style="color: #000000">}</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">db$</span><span style="color: #000000"> = </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;myDatabase&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">schema:</span><span style="color: #000000"> [{ </span><span style="color: #001080">version:</span><span style="color: #000000"> </span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #001080">stores:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;users&#039;</span><span style="color: #000000">] }],</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #001080">db$</span><span style="color: #000000">.</span><span style="color: #795E26">pipe</span><span style="color: #000000">(</span>
+<span style="color: #000000">  </span><span style="color: #795E26">concatMap</span><span style="color: #000000">(</span><span style="color: #001080">db</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">transaction$</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;users&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;readwrite&#039;</span><span style="color: #000000">)),</span>
+<span style="color: #000000">  </span><span style="color: #795E26">map</span><span style="color: #000000">(</span><span style="color: #001080">transaction</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">transaction</span><span style="color: #000000">.</span><span style="color: #795E26">objectStore</span><span style="color: #000000">&lt;</span><span style="color: #267F99">User</span><span style="color: #000000">&gt;(</span><span style="color: #A31515">&#039;users&#039;</span><span style="color: #000000">)),</span>
+<span style="color: #000000">  </span><span style="color: #795E26">concatMap</span><span style="color: #000000">(</span><span style="color: #001080">objectStore</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span>
+<span style="color: #000000">    </span><span style="color: #008000">// You can only add Users to this store</span>
+<span style="color: #000000">    </span><span style="color: #001080">objectStore</span><span style="color: #000000">.</span><span style="color: #795E26">add$</span><span style="color: #000000">({ </span><span style="color: #001080">id:</span><span style="color: #000000"> </span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #001080">name:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;John Doe&#039;</span><span style="color: #000000"> }, </span><span style="color: #A31515">&#039;key1&#039;</span><span style="color: #000000">).</span><span style="color: #795E26">pipe</span><span style="color: #000000">(</span>
+<span style="color: #000000">      </span><span style="color: #795E26">concatMap</span><span style="color: #000000">(</span><span style="color: #001080">key</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">objectStore</span><span style="color: #000000">.</span><span style="color: #795E26">get$</span><span style="color: #000000">(</span><span style="color: #001080">key</span><span style="color: #000000">)),</span>
+<span style="color: #000000">      </span><span style="color: #795E26">map</span><span style="color: #000000">(</span><span style="color: #001080">user</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">user</span><span style="color: #000000">.</span><span style="color: #001080">name</span><span style="color: #000000">) </span><span style="color: #008000">// &#039;user&#039; is typed as User</span>
+<span style="color: #000000">    )</span>
+<span style="color: #000000">  ),</span>
+<span style="color: #000000">).</span><span style="color: #795E26">subscribe</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #795E26">next</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">value</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">value</span><span style="color: #000000">), </span><span style="color: #008000">// Logs &quot;John Doe&quot;</span>
+<span style="color: #000000">});</span>
+</code></pre>
+				<a href="#working-with-cursors" id="working-with-cursors" style="color: inherit; text-decoration: none;">
+					<h3>Working with cursors</h3>
+				</a>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">ReactiveIDBDatabase</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;./reactive-idb-database&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">db$</span><span style="color: #000000">: </span><span style="color: #267F99">ReactiveIDBDatabase</span><span style="color: #000000">;</span>
+
+<span style="color: #001080">db$</span><span style="color: #000000">.</span><span style="color: #795E26">pipe</span><span style="color: #000000">(</span>
+<span style="color: #000000">  </span><span style="color: #795E26">concatMap</span><span style="color: #000000">(</span><span style="color: #001080">db</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">transaction$</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;myStore1&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;readwrite&#039;</span><span style="color: #000000">)),</span>
+<span style="color: #000000">  </span><span style="color: #795E26">concatMap</span><span style="color: #000000">(</span><span style="color: #001080">transaction</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span>
+<span style="color: #000000">    </span><span style="color: #001080">transaction</span><span style="color: #000000">.</span><span style="color: #795E26">objectStore</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;myStore1&#039;</span><span style="color: #000000">).</span><span style="color: #795E26">openCursor$</span><span style="color: #000000">().</span><span style="color: #795E26">pipe</span><span style="color: #000000">(</span>
+<span style="color: #000000">      </span><span style="color: #795E26">takeWhile</span><span style="color: #000000">(</span><span style="color: #001080">cursor</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> !!</span><span style="color: #001080">cursor</span><span style="color: #000000">),</span>
+<span style="color: #000000">      </span><span style="color: #795E26">tap</span><span style="color: #000000">(</span><span style="color: #001080">cursor</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">cursor</span><span style="color: #000000">.</span><span style="color: #795E26">continue</span><span style="color: #000000">()),</span>
+<span style="color: #000000">      </span><span style="color: #795E26">map</span><span style="color: #000000">(</span><span style="color: #001080">cursor</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">cursor</span><span style="color: #000000">.</span><span style="color: #001080">value</span><span style="color: #000000">),</span>
+<span style="color: #000000">    )</span>
+<span style="color: #000000">  )</span>
+<span style="color: #000000">).</span><span style="color: #795E26">subscribe</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #795E26">next</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">value</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">value</span><span style="color: #000000">), </span><span style="color: #008000">// Logs all objects in store</span>
+<span style="color: #000000">});</span>
+</code></pre>
+				<hr>
+				<a href="#contribute" id="contribute" style="color: inherit; text-decoration: none;">
+					<h1>Contribute</h1>
+				</a>
+				<p>They are many ways you can contribute to <strong>reactive-idb</strong> !</p>
+				<ul>
+					<li>Star the project</li>
+					<li>Report a bug</li>
+					<li>Open a pull request</li>
+					<li>Start a discussion to share your ideas</li>
+					<li>Become a sponsor</li>
+				</ul>
+				<hr>
+				<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+					<h1>License</h1>
+				</a>
+				<p>MIT License</p>
+				<p>Copyright (c) 2019 Thomas Gambet</p>
+				<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+					of this software and associated documentation files (the &quot;Software&quot;), to deal
+					in the Software without restriction, including without limitation the rights
+					to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+					copies of the Software, and to permit persons to whom the Software is
+				furnished to do so, subject to the following conditions:</p>
+				<p>The above copyright notice and this permission notice shall be included in all
+				copies or substantial portions of the Software.</p>
+				<p>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+					IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+					FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+					AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+					LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+					OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+				SOFTWARE.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/reactive_idb_database.html">reactive-<wbr>idb-<wbr>database</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/reactive_idb_index.html">reactive-<wbr>idb-<wbr>index</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/reactive_idb_object_store.html">reactive-<wbr>idb-<wbr>object-<wbr>store</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/reactive_idb_transaction.html">reactive-<wbr>idb-<wbr>transaction</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
