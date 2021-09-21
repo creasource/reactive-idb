@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.2.1](https://www.github.com/creasource/reactive-idb/compare/v1.2.0...v1.2.1) (2021-09-21)
+
+
+### Bug Fixes
+
+* set module target to es2020 ([529b44d](https://www.github.com/creasource/reactive-idb/commit/529b44dda21c620b3a9f3ef0b22e1a9ed82ea3ca))
+
 ## [1.2.0](https://www.github.com/creasource/reactive-idb/compare/v1.1.0...v1.2.0) (2021-09-21)
 
 
