@@ -153,7 +153,7 @@ export class ReactiveIDBDatabase {
           database,
           versionChange.oldVersion,
           versionChange.newVersion,
-          ((versionChange.target as unknown) as { transaction: IDBTransaction })
+          (versionChange.target as unknown as { transaction: IDBTransaction })
             .transaction
         );
       };
