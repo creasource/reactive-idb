@@ -17,13 +17,6 @@ jobs:
         with:
           release-type: node
 
-  test:
-    needs: [release-please]
-    if: ${{ needs.release-please.outputs.release_created }}
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo ${{ needs.release-please.outputs.release_created }} ${{ needs.release-please.outputs.tag_name }}
-
   publish-npm:
     name: Publish on NPM
     needs: [ release-please ]
