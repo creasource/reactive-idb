@@ -1,6 +1,6 @@
 {
   "name": "@creasource/reactive-idb",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A reactive wrapper to indexedDb using Rxjs",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
@@ -45,7 +45,7 @@
     "node": ">=10"
   },
   "peerDependencies": {
-    "rxjs": "^7.3.0"
+    "rxjs": ">=6.6.0"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
