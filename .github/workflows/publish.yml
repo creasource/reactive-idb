@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: '14'
           registry-url: https://registry.npmjs.org/
       - uses: bahmutov/npm-install@v1
       - run: yarn build:main && yarn build:module
@@ -24,9 +24,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: '14'
           registry-url: https://npm.pkg.github.com/
       - uses: bahmutov/npm-install@v1
       - run: yarn build:main && yarn build:module
@@ -39,7 +39,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
       - uses: bahmutov/npm-install@v1
       - name: Generate documentation
         run: yarn doc:html
